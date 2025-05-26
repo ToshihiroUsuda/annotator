@@ -1,0 +1,48 @@
+@use '../../../assets/sass/theme.scss' as *;
+@use './customModal.scss' as *;
+
+.new-data-table {
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    table-layout: fixed;
+
+    .table-header {
+        &-icon {
+            margin-right: 8px;
+            font-size: medium;
+        }
+        &-title {
+            text-transform: uppercase;
+        }
+    }
+    table {
+        width: 100%;
+    }
+
+    thead,
+    tbody {
+        font-size: 20px;
+        tr {
+            height: 48px;
+            color: #f1f1f1;
+            font-weight: initial;
+            text-align: center;
+            vertical-align: center;
+        }
+        td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    tbody {
+        background-color: $lighter-1;
+    }
+}
+
+.td-progress {
+    margin-left: 8px;
+    margin-right: 8px;
+}

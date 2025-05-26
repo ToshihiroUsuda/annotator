@@ -1,0 +1,133 @@
+@use '../../../assets/sass/theme.scss' as *;
+
+.report-page-main {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    .main-table {
+        overflow-y: scroll;
+        height: calc(100vh - 2rem - 32px - 24px - 120px);
+    }
+    .database-table {
+        width: 100%;
+        box-sizing: border-box;
+        position: relative;
+        table-layout: fixed;
+        margin-left: auto;
+        margin-right: auto;
+
+        thead,
+        tbody {
+            font-size: 20px;
+            tr {
+                color: #f1f1f1;
+                font-weight: initial;
+                text-align: center;
+                vertical-align: center;
+            }
+        }
+
+        tbody {
+            background-color: $lighter-1;
+            tr {
+                height: 48px;
+                &:hover {
+                    background-color: $lighter-1;
+                }
+                td {
+                    &:hover {
+                        background-color: $lighter-1;
+                    }
+                    &.clickable {
+                        cursor: pointer;
+                    }
+                    &.icon {
+                        width: 50px;
+                        a {
+                            .done {
+                                color: green;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .table-header-row {
+            &-title {
+                text-transform: uppercase;
+            }
+
+            .table-header {
+                &.icon {
+                    width: 50px;
+                }
+            }
+        }
+    }
+
+    .report-list-toolbar {
+        display: flex;
+        height: 120px;
+
+        ul {
+            display: flex;
+            flex-direction: row;
+            margin: auto;
+            flex-wrap: wrap;
+            li {
+                display: flex;
+                list-style-type: none;
+                margin-left: 10px;
+                margin-right: 10px;
+
+                .button-item {
+                    display: flex;
+                    flex-direction: column;
+                    width: 120px;
+                    height: 120px;
+                    &.active {
+                        &:hover {
+                            cursor: pointer;
+                            background-color: $lighter-2;
+                            // border: solid 1px $lighter-3;
+                        }
+                    }
+                    &.deactive {
+                        // background-color: $darker-2;
+                        i,
+                        .button-title {
+                            // color: $darker-5;
+                            opacity: 0.25;
+                        }
+                    }
+                    .button-icon {
+                        margin: auto;
+                        a {
+                            display: flex;
+                            flex-direction: row;
+                            text-align: center;
+                            align-items: center;
+                            margin-left: auto;
+                            margin-right: auto;
+
+                            i {
+                                font-size: 80px;
+                                text-align: center;
+                            }
+                        }
+                    }
+                    .button-title {
+                        margin: auto;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// .page-body{
+//     // max-height: 80%;
+//     height: fit-content;
+//     overflow: auto;
+// }

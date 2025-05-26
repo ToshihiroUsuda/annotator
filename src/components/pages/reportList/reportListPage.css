@@ -1,0 +1,189 @@
+.bg-darker-1 {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.bg-darker-2 {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.bg-darker-3 {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.bg-darker-4 {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.bg-darker-5 {
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+.bg-lighter-1 {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.bg-lighter-2 {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.bg-lighter-3 {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.bg-lighter-4 {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.bg-lighter-5 {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.page-main {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.page-body {
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+    overflow: auto;
+}
+
+.database-table {
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+    table-layout: fixed;
+}
+
+.database-table table {
+    width: 100%;
+}
+
+.database-table thead,
+.database-table tbody {
+    font-size: 20px;
+}
+
+.database-table thead tr,
+.database-table tbody tr {
+    color: #f1f1f1;
+    font-weight: initial;
+    text-align: center;
+    vertical-align: center;
+}
+
+.database-table tbody {
+    background-color: rgba(255, 255, 255, 0.05);
+    overflow-y: scroll;
+    min-height: -webkit-fit-content;
+    min-height: -moz-fit-content;
+    min-height: fit-content;
+}
+
+.database-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.database-table tbody tr td:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.database-table tbody tr td.clickable {
+    cursor: pointer;
+}
+
+.database-table .table-header-title {
+    text-transform: uppercase;
+}
+
+.report-list-toolbar {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    height: 120px;
+}
+
+.report-list-toolbar ul {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    margin: auto;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.report-list-toolbar ul li {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    list-style-type: none;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.report-list-toolbar ul li .button-item {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 120px;
+    height: 120px;
+}
+
+.report-list-toolbar ul li .button-item.active:hover {
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.report-list-toolbar ul li .button-item.deactive i,
+.report-list-toolbar ul li .button-item.deactive .button-title {
+    opacity: 0.25;
+}
+
+.report-list-toolbar ul li .button-item .button-icon {
+    margin: auto;
+}
+
+.report-list-toolbar ul li .button-item .button-icon a {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    text-align: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.report-list-toolbar ul li .button-item .button-icon a i {
+    font-size: 80px;
+    text-align: center;
+}
+
+.report-list-toolbar ul li .button-item .button-title {
+    margin: auto;
+}
+/*# sourceMappingURL=reportListPage.css.map */

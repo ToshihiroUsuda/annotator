@@ -1,0 +1,38 @@
+.inline-block {
+    display: inline-block;
+}
+
+@media (min-width: 1280px) {
+    form {
+        max-width: 1165px;
+    }
+}
+
+.form-row {
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin: 0;
+}
+
+.form-row .object-wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    margin-bottom: 0;
+}
+
+.form-row .form-group {
+    margin-right: 1em;
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+}
+/*# sourceMappingURL=common.css.map */

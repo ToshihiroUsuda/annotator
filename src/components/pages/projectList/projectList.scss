@@ -1,0 +1,63 @@
+@use '../../../assets/sass/theme.scss' as *;
+
+.projects-list {
+    display: flex;
+    flex: 1 1 0%;
+    min-height: 100%;
+    flex-direction: row;
+    position: relative;
+
+    &-row {
+        display: flex;
+        flex: 0 0 auto;
+        flex-direction: column;
+        width: 25%;
+        min-height: 100%;
+        border-right: solid 1px $lighter-2;
+    }
+    &-header {
+        font-size: 80%;
+        color: #f1f1f1;
+        margin: 0;
+        text-transform: uppercase;
+        position: sticky;
+        top: 0;
+        height: 30px;
+        i {
+            margin-right: 0.5em;
+        }
+    }
+
+    &-body {
+        flex-grow: 1;
+        display: flex;
+        overflow: auto;
+        flex-direction: column;
+        position: relative;
+        height: calc(100vh - 144px);
+    }
+}
+
+ul.projects-list-items {
+    margin: 0;
+    padding: 0;
+
+    li {
+        list-style-type: none;
+        font-size: 90%;
+        color: #ccc;
+
+        a {
+            cursor: pointer;
+            width: 100%;
+            padding: 0.25em 1em;
+            display: inline-block;
+            text-decoration: none;
+
+            &.active,
+            &:hover {
+                background-color: $lighter-2;
+            }
+        }
+    }
+}

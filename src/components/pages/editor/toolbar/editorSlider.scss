@@ -1,0 +1,25 @@
+@use "../../../../assets/sass/theme.scss" as *;
+
+.slider {
+  width: 33%;
+  border-right: solid 1px $lighter-2;
+  padding-right: 10px;
+  padding-left: 10px;
+  box-sizing: border-box;
+  .slider-body {
+    display: flex;
+    a {
+      font-size: 12px;
+      cursor: pointer;
+      margin: auto;
+      padding-right: 10px;
+      padding-left: 10px;
+    }
+  }
+}
+
+.slider-toolbar {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+}
