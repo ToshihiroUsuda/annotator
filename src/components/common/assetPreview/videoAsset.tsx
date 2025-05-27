@@ -28,6 +28,7 @@ import {
 import { AssetService } from "../../../services/assetService";
 import { CustomVideoPlayerButton } from "../videoPlayer/customVideoPlayerButton";
 import { IAssetProps } from ".";
+import "./assetStateSeletor.scss";
 
 export type IAssetWithTimestamp = Omit<IAsset, "timestamp"> & {
   timestamp: number;
@@ -38,8 +39,6 @@ export interface IVideoAssetProps extends IAssetProps {
   autoPlay?: boolean;
   onSeekTimeClick: () => void;
   childAssets: IAssetWithTimestamp[];
-  visibleState: AssetState[];
-  visibleStatePolyInput: boolean;
 }
 
 export interface IVideoAssetRef {
@@ -60,8 +59,6 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
       appSettings,
       onSeekTimeClick,
       childAssets,
-      visibleState,
-      visibleStatePolyInput,
       onLoaded,
       onBeforeAssetChanged,
       onTrack,
@@ -73,6 +70,8 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
     const [loaded, setLoaded] = useState(false);
     const videoPlayer = useRef<PlayerReference | null>(null);
     const timelineElement = useRef<Element | null>(null);
+    const [visibleStates, setVisibleStates] = useState<AssetState[]>([]);
+    const [visibleStatePolyInput, setvisibleStatePolyInput] = useState(false);
 
     // プレイヤーの状態取得
     const getVideoPlayerState = useCallback(() => {
@@ -170,16 +169,16 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
 
     const movePreviousTaggedFrame = useCallback(() => {
       const previousTimestamp = findAdjacentTaggedTimestamp(
-        visibleState,
+        visibleStates,
         "previous"
       );
       if (previousTimestamp) seekToTime(previousTimestamp);
-    }, [findAdjacentTaggedTimestamp, seekToTime, visibleState]);
+    }, [findAdjacentTaggedTimestamp, seekToTime, visibleStates]);
 
     const moveNextTaggedFrame = useCallback(() => {
-      const nextTimeStamp = findAdjacentTaggedTimestamp(visibleState, "next");
+      const nextTimeStamp = findAdjacentTaggedTimestamp(visibleStates, "next");
       if (nextTimeStamp) seekToTime(nextTimeStamp);
-    }, [findAdjacentTaggedTimestamp, seekToTime, visibleState]);
+    }, [findAdjacentTaggedTimestamp, seekToTime, visibleStates]);
 
     const moveNextExpectedFrame = useCallback(() => {
       const currentTime = getVideoPlayerState().currentTime;
@@ -199,7 +198,7 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
         const frameSkipTime = 1 / appSettings.frameExtractionRate;
         let seekTimestamp: number = currentTime + frameSkipTime;
         const visibleStateWithTracked = [
-          ...(visibleState || []),
+          ...(visibleStates || []),
           AssetState.Tracked,
         ];
         if (numFrames > 0) {
@@ -225,7 +224,7 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
       [
         getVideoPlayerState,
         appSettings.frameExtractionRate,
-        visibleState,
+        visibleStates,
         findAdjacentTaggedTimestamp,
         seekToTime,
       ]
@@ -261,7 +260,7 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
             break;
         }
         if (
-          visibleState.includes(childAsset.state) &&
+          visibleStates.includes(childAsset.state) &&
           !childAsset.comment &&
           !childAsset.step &&
           childAsset.polylineNumber === 0 &&
@@ -287,7 +286,7 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
               (childAsset.polygonNumber || childAsset.polylineNumber) && (
                 <div className="poly-input-flag" style={style} />
               )}
-            {visibleState.indexOf(childAsset.state) >= 0 && (
+            {visibleStates.indexOf(childAsset.state) >= 0 && (
               <div
                 onClick={() => seekToTime(childAsset.timestamp)}
                 className={className}
@@ -297,7 +296,7 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
           </div>
         );
       },
-      [seekToTime, visibleState, visibleStatePolyInput]
+      [seekToTime, visibleStates, visibleStatePolyInput]
     );
 
     const renderTimeline = useCallback(
@@ -447,7 +446,7 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
     useEffect(() => {
       addAssetTimelineTags(childAssets, getVideoPlayerState().duration);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [childAssets, visibleState.length, visibleStatePolyInput]);
+    }, [childAssets, visibleStates.length, visibleStatePolyInput]);
 
     // プレイヤー状態
     const playerState = videoPlayer.current
@@ -492,124 +491,206 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
     }));
 
     return (
-      <Player
-        ref={videoPlayer}
-        autoPlay={autoPlay}
-        src={videoPath}
-        crossOrigin="anonymous"
-      >
-        <BigPlayButton position="center" />
-        {autoPlay && (
-          <ControlBar autoHide={false}>
-            {!controlsEnabled && seeking && (
-              <div className="video-react-control-bar-disabled"></div>
-            )}
-            <CustomVideoPlayerButton
-              accelerators={["ArrowLeft", "B", "b"]}
-              tooltip={
-                strings.editorPage.videoPlayer.previousExpectedFrame.tooltip
-              }
-              onClick={movePreviousExpectedFrame}
-              icon={"fa-caret-left fa-lg"}
-            >
-              <i className="fas fa-caret-left fa-lg" />
-            </CustomVideoPlayerButton>
-            <CustomVideoPlayerButton
-              accelerators={["ArrowRight", "M", "m"]}
-              tooltip={strings.editorPage.videoPlayer.nextExpectedFrame.tooltip}
-              onClick={moveNextExpectedFrame}
-              icon={"fa-caret-right fa-lg"}
-            >
-              <i className="fas fa-caret-right fa-lg" />
-            </CustomVideoPlayerButton>
-            <CustomVideoPlayerButton
-              accelerators={["Shift+ArrowLeft", "Z", "z"]}
-              tooltip={
-                strings.editorPage.videoPlayer.previous5ExpectedFrame.tooltip
-              }
-              onClick={() => moveFrame(-5)}
-              icon={"fa-backward"}
-            >
-              5<i className="fas fa-backward" />
-            </CustomVideoPlayerButton>
-            <CustomVideoPlayerButton
-              accelerators={["Shift+ArrowRight", "C", "c"]}
-              tooltip={
-                strings.editorPage.videoPlayer.next5ExpectedFrame.tooltip
-              }
-              onClick={() => moveFrame(5)}
-              icon={"fa-forward"}
-            >
-              <i className="fas fa-forward" />5
-            </CustomVideoPlayerButton>
-            <CustomVideoPlayerButton
-              accelerators={["CmdOrCtrl+ArrowLeft", "A", "a"]}
-              tooltip={
-                strings.editorPage.videoPlayer.previous30ExpectedFrame.tooltip
-              }
-              onClick={() => moveFrame(-frameExtractionRate)}
-              icon={"fa-backward"}
-            >
-              {frameExtractionRate.toString()}
-              <i className="fas fa-backward" />
-            </CustomVideoPlayerButton>
-            <CustomVideoPlayerButton
-              accelerators={["CmdOrCtrl+ArrowRight", "D", "d"]}
-              tooltip={
-                strings.editorPage.videoPlayer.next30ExpectedFrame.tooltip
-              }
-              onClick={() => moveFrame(frameExtractionRate)}
-              icon={"fa-forward"}
-            >
-              <i className="fas fa-forward" />
-              {frameExtractionRate.toString()}
-            </CustomVideoPlayerButton>
-            {showDetailTime && <CurrentTimeDisplay order={2.1} />}
-            {showDetailTime && (
-              <CustomVideoPlayerButton>
-                {renderCurrentTimeDisplay()}
-              </CustomVideoPlayerButton>
-            )}
-            <DurationDisplay order={6.1} />
-            {!paused && <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} />}
-            {paused && (
-              <CustomVideoPlayerButton onClick={() => {}}>
-                {`${playbackRate.toFixed(2)}x`}
-              </CustomVideoPlayerButton>
-            )}
-            <CustomVideoPlayerButton
-              accelerators={["Q", "q"]}
-              tooltip={
-                strings.editorPage.videoPlayer.previousTaggedFrame.tooltip
-              }
-              onClick={movePreviousTaggedFrame}
-              icon={"fas fa-step-backward"}
-            >
-              <i className="fas fa-step-backward"></i>
-            </CustomVideoPlayerButton>
-            <CustomVideoPlayerButton
-              accelerators={["E", "e"]}
-              tooltip={strings.editorPage.videoPlayer.nextTaggedFrame.tooltip}
-              onClick={moveNextTaggedFrame}
-              icon={"fa-step-forward"}
-            >
-              <i className="fas fa-step-forward"></i>
-            </CustomVideoPlayerButton>
-            {appSettings.appMode === AppMode.Internal && (
+      <>
+        <Player
+          ref={videoPlayer}
+          autoPlay={autoPlay}
+          src={videoPath}
+          crossOrigin="anonymous"
+        >
+          <BigPlayButton position="center" />
+          {autoPlay && (
+            <ControlBar autoHide={false}>
+              {!controlsEnabled && seeking && (
+                <div className="video-react-control-bar-disabled"></div>
+              )}
               <CustomVideoPlayerButton
-                accelerators={["CmdOrCtrl+t"]}
-                tooltip={"Seek to Time"}
-                onClick={onSeekTimeClick}
-                icon={"fa-clock"}
+                accelerators={["ArrowLeft", "B", "b"]}
+                tooltip={
+                  strings.editorPage.videoPlayer.previousExpectedFrame.tooltip
+                }
+                onClick={movePreviousExpectedFrame}
+                icon={"fa-caret-left fa-lg"}
               >
-                <i className="fas fa-clock"></i>
+                <i className="fas fa-caret-left fa-lg" />
               </CustomVideoPlayerButton>
-            )}
-          </ControlBar>
-        )}
-      </Player>
+              <CustomVideoPlayerButton
+                accelerators={["ArrowRight", "M", "m"]}
+                tooltip={
+                  strings.editorPage.videoPlayer.nextExpectedFrame.tooltip
+                }
+                onClick={moveNextExpectedFrame}
+                icon={"fa-caret-right fa-lg"}
+              >
+                <i className="fas fa-caret-right fa-lg" />
+              </CustomVideoPlayerButton>
+              <CustomVideoPlayerButton
+                accelerators={["Shift+ArrowLeft", "Z", "z"]}
+                tooltip={
+                  strings.editorPage.videoPlayer.previous5ExpectedFrame.tooltip
+                }
+                onClick={() => moveFrame(-5)}
+                icon={"fa-backward"}
+              >
+                5<i className="fas fa-backward" />
+              </CustomVideoPlayerButton>
+              <CustomVideoPlayerButton
+                accelerators={["Shift+ArrowRight", "C", "c"]}
+                tooltip={
+                  strings.editorPage.videoPlayer.next5ExpectedFrame.tooltip
+                }
+                onClick={() => moveFrame(5)}
+                icon={"fa-forward"}
+              >
+                <i className="fas fa-forward" />5
+              </CustomVideoPlayerButton>
+              <CustomVideoPlayerButton
+                accelerators={["CmdOrCtrl+ArrowLeft", "A", "a"]}
+                tooltip={
+                  strings.editorPage.videoPlayer.previous30ExpectedFrame.tooltip
+                }
+                onClick={() => moveFrame(-frameExtractionRate)}
+                icon={"fa-backward"}
+              >
+                {frameExtractionRate.toString()}
+                <i className="fas fa-backward" />
+              </CustomVideoPlayerButton>
+              <CustomVideoPlayerButton
+                accelerators={["CmdOrCtrl+ArrowRight", "D", "d"]}
+                tooltip={
+                  strings.editorPage.videoPlayer.next30ExpectedFrame.tooltip
+                }
+                onClick={() => moveFrame(frameExtractionRate)}
+                icon={"fa-forward"}
+              >
+                <i className="fas fa-forward" />
+                {frameExtractionRate.toString()}
+              </CustomVideoPlayerButton>
+              {showDetailTime && <CurrentTimeDisplay order={2.1} />}
+              {showDetailTime && (
+                <CustomVideoPlayerButton>
+                  {renderCurrentTimeDisplay()}
+                </CustomVideoPlayerButton>
+              )}
+              <DurationDisplay order={6.1} />
+              {!paused && (
+                <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} />
+              )}
+              {paused && (
+                <CustomVideoPlayerButton onClick={() => {}}>
+                  {`${playbackRate.toFixed(2)}x`}
+                </CustomVideoPlayerButton>
+              )}
+              <CustomVideoPlayerButton
+                accelerators={["Q", "q"]}
+                tooltip={
+                  strings.editorPage.videoPlayer.previousTaggedFrame.tooltip
+                }
+                onClick={movePreviousTaggedFrame}
+                icon={"fas fa-step-backward"}
+              >
+                <i className="fas fa-step-backward"></i>
+              </CustomVideoPlayerButton>
+              <CustomVideoPlayerButton
+                accelerators={["E", "e"]}
+                tooltip={strings.editorPage.videoPlayer.nextTaggedFrame.tooltip}
+                onClick={moveNextTaggedFrame}
+                icon={"fa-step-forward"}
+              >
+                <i className="fas fa-step-forward"></i>
+              </CustomVideoPlayerButton>
+              {appSettings.appMode === AppMode.Internal && (
+                <CustomVideoPlayerButton
+                  accelerators={["CmdOrCtrl+t"]}
+                  tooltip={"Seek to Time"}
+                  onClick={onSeekTimeClick}
+                  icon={"fa-clock"}
+                >
+                  <i className="fas fa-clock"></i>
+                </CustomVideoPlayerButton>
+              )}
+            </ControlBar>
+          )}
+        </Player>
+        <AssetStateSelector
+          show={!!props.showAssetStateSelector}
+          selectedStates={visibleStates}
+          onChange={setVisibleStates}
+          showPolyInput={visibleStatePolyInput}
+          isPolyInputEnabled={
+            !!props.showAssetStateSelector &&
+            props.appSettings.appMode === AppMode.Internal
+          }
+          onPolyInputChange={setvisibleStatePolyInput}
+        />
+      </>
     );
   }
 );
 
 VideoAsset.displayName = "VideoAsset";
+
+type AssetStateSelectorProps = {
+  show: boolean;
+  selectedStates: AssetState[];
+  onChange?: (state: AssetState[]) => void;
+  showPolyInput: boolean;
+  isPolyInputEnabled: boolean;
+  onPolyInputChange?: (visible: boolean) => void;
+};
+
+const AssetStateSelector: React.FC<AssetStateSelectorProps> = (props) => {
+  if (!props.show) return null;
+
+  const onChange = (state: AssetState) => {
+    const newStates = [...props.selectedStates];
+    const index = newStates.indexOf(state);
+    if (index >= 0) {
+      newStates.splice(index, 1);
+    } else {
+      newStates.push(state);
+    }
+    props.onChange?.(newStates);
+  };
+
+  return (
+    <div className="asset-state-selector">
+      <a className="button sample" onClick={() => onChange(AssetState.Sample)}>
+        <i
+          className={`${props.selectedStates.includes(AssetState.Sample) ? "fas" : "far"} fa-circle`}
+        ></i>
+      </a>
+      <a className="button store" onClick={() => onChange(AssetState.Store)}>
+        <i
+          className={`${props.selectedStates.includes(AssetState.Store) ? "fas" : "far"} fa-circle`}
+        ></i>
+      </a>
+      <a className="button freeze" onClick={() => onChange(AssetState.Freeze)}>
+        <i
+          className={`${props.selectedStates.includes(AssetState.Freeze) ? "fas" : "far"} fa-circle`}
+        ></i>
+      </a>
+      <a
+        className="button freeze_store"
+        onClick={() => onChange(AssetState.FreezeStore)}
+      >
+        <i
+          className={`${props.selectedStates.includes(AssetState.FreezeStore) ? "fas" : "far"} fa-circle`}
+        ></i>
+      </a>
+      {/* 入力したPolygonの線を表示/非表示するボタン */}
+      {props.showPolyInput && (
+        <a
+          className="button poly-input"
+          onClick={() => {
+            props.onPolyInputChange?.(!props.isPolyInputEnabled);
+          }}
+        >
+          <i
+            className={`${props.isPolyInputEnabled ? "fas" : "far"} fa-circle`}
+          ></i>
+        </a>
+      )}
+    </div>
+  );
+};

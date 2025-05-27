@@ -677,82 +677,14 @@ export default class EditorPage extends React.Component<
                         onBeforeAssetChanged={this.onBeforeAssetSelected}
                         onChildAssetSelected={this.onChildAssetSelected}
                         onSeekTimeClick={this.onSeekTimeClick}
-                        // loadAssetMetadata={
-                        //     this.loadAssetMetadata
-                        // }
                         onTrack={this.onTrack}
                         asset={selectedAsset.asset}
                         projectName={this.state.project.name}
                         appSettings={this.props.appSettings}
-                        visibleState={this.state.visibleState}
-                        visibleStatePolyInput={
-                          appMode === AppMode.Internal &&
-                          this.state.visibleStatePolyInput
-                        }
                         childAssets={this.state.childAssets}
+                        showAssetStateSelector={true}
                       />
                     </Canvas>
-                    {(selectedAsset.asset.type === AssetType.Video ||
-                      selectedAsset.asset.type === AssetType.VideoFrame) && (
-                      <div className="state-checkbox">
-                        <a
-                          className="checkbox sample"
-                          onClick={() =>
-                            this.onStateCheckboxClick(AssetState.Sample)
-                          }
-                        >
-                          <i
-                            className={`${this.state.visibleState.indexOf(AssetState.Sample) >= 0 ? "fas" : "far"} fa-circle`}
-                          ></i>
-                        </a>
-                        <a
-                          className="checkbox store"
-                          onClick={() =>
-                            this.onStateCheckboxClick(AssetState.Store)
-                          }
-                        >
-                          <i
-                            className={`${this.state.visibleState.indexOf(AssetState.Store) >= 0 ? "fas" : "far"} fa-circle`}
-                          ></i>
-                        </a>
-                        <a
-                          className="checkbox freeze"
-                          onClick={() =>
-                            this.onStateCheckboxClick(AssetState.Freeze)
-                          }
-                        >
-                          <i
-                            className={`${this.state.visibleState.indexOf(AssetState.Freeze) >= 0 ? "fas" : "far"} fa-circle`}
-                          ></i>
-                        </a>
-                        <a
-                          className="checkbox freeze_store"
-                          onClick={() =>
-                            this.onStateCheckboxClick(AssetState.FreezeStore)
-                          }
-                        >
-                          <i
-                            className={`${this.state.visibleState.indexOf(AssetState.FreezeStore) >= 0 ? "fas" : "far"} fa-circle`}
-                          ></i>
-                        </a>
-                        {/* 入力したPolygonの線を表示/非表示するボタン */}
-                        {appMode === AppMode.Internal && (
-                          <a
-                            className="checkbox poly-input"
-                            onClick={() =>
-                              this.setState({
-                                visibleStatePolyInput:
-                                  !this.state.visibleStatePolyInput,
-                              })
-                            }
-                          >
-                            <i
-                              className={`${this.state.visibleStatePolyInput ? "fas" : "far"} fa-circle`}
-                            ></i>
-                          </a>
-                        )}
-                      </div>
-                    )}
                     {selectedAsset.asset.step && (
                       <div className="step-info">
                         {this.stepInformation[selectedAsset.asset.step] ||

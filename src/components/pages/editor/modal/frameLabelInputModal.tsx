@@ -6,7 +6,7 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import ArrayFieldTemplate from "../../../common/arrayField/arrayFieldTemplate";
 import FieldTemplate from "../../../common/customField/customFieldTemplate";
 import { ObjectFieldTemplate } from "../../../common/objectField/objectFieldTemplate";
-import "./FrameLabelModal.scss";
+import "./FrameLabelInputModal.scss";
 import { LocalFileSystem } from "../../../../providers/storage/localFileSystem";
 /**
  * Properties for Tag Editor Modal

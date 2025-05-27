@@ -9,7 +9,6 @@ import React, {
 } from "react";
 import { strings } from "../../../common/strings";
 import {
-  AssetState,
   AssetType,
   IAppSettings,
   IAsset,
@@ -39,8 +38,6 @@ export interface IAssetProps {
   childAssets?: IAsset[];
   controlsEnabled?: boolean;
   tags?: ITag[];
-  visibleState?: AssetState[];
-  visibleStatePolyInput?: boolean;
   onLoaded?: (ContentSource: ContentSource) => void;
   onActivated?: (contentSource: ContentSource) => void;
   onDeactivated?: (contentSource: ContentSource) => void;
@@ -50,6 +47,7 @@ export interface IAssetProps {
   onBeforeAssetChanged?: () => boolean;
   onSeekTimeClick?: () => void;
   onTrack?: (beTraked: boolean) => void;
+  showAssetStateSelector?: boolean;
 }
 
 export interface IAssetPreviewProps extends IAssetProps {
@@ -78,8 +76,6 @@ export const AssetPreview = forwardRef<IAssetPreviewHandle, IAssetPreviewProps>(
       childAssets = [],
       controlsEnabled = true,
       tags,
-      visibleState = [],
-      visibleStatePolyInput = false,
       onLoaded,
       onActivated,
       onDeactivated,
@@ -89,6 +85,7 @@ export const AssetPreview = forwardRef<IAssetPreviewHandle, IAssetPreviewProps>(
       onBeforeAssetChanged,
       onSeekTimeClick,
       onTrack,
+      showAssetStateSelector = false,
       autoPlay = false,
     },
     ref
@@ -195,9 +192,8 @@ export const AssetPreview = forwardRef<IAssetPreviewHandle, IAssetPreviewProps>(
               onTrack={onTrack}
               onActivated={onActivated}
               onDeactivated={onDeactivated}
-              visibleState={visibleState}
-              visibleStatePolyInput={!!visibleStatePolyInput}
               tags={tags}
+              showAssetStateSelector={showAssetStateSelector}
             />
           );
         default:

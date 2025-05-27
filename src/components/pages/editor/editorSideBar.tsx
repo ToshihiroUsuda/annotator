@@ -96,6 +96,7 @@ export const EditorSideBar: React.FC<IEditorSideBarProps> = (props) => {
             asset={asset}
             projectName={props.project.name}
             appSettings={props.appSettings}
+            showAssetStateSelector={false}
           />
         </div>
         <div className="asset-item-metadata">

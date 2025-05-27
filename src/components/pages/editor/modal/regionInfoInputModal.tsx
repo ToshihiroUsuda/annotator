@@ -8,8 +8,7 @@ import ArrayFieldTemplate from "../../../common/arrayField/arrayFieldTemplate";
 import FieldTemplate from "../../../common/customField/customFieldTemplate";
 import { ObjectFieldTemplate } from "../../../common/objectField/objectFieldTemplate";
 import validator from "@rjsf/validator-ajv8";
-import "./informationInputModal.scss";
-import { is } from "snapsvg-cjs";
+import "./regionInfoInputModal.scss";
 
 type IFormShemaReord = Record<string, RJSFSchema>;
 type IUiSchemaReord = Record<string, Record<string, unknown>>;
