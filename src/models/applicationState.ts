@@ -34,6 +34,7 @@ export enum ErrorCode {
   ActiveLearningPredictionError = "activeLearningPredictionError",
   FormSchemaImportError = "formSchemaImportError",
   DatabaseJsonNotFoundError = "databaseJsonNotFoundError",
+  VideoLoadError = "videoLoadError",
 }
 
 /**

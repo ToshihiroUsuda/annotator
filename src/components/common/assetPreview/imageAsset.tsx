@@ -31,7 +31,6 @@ export const ImageAsset: React.FC<IAssetProps> = (props) => {
       onLoad={onLoad}
       onError={props.onError}
       crossOrigin="anonymous"
-      style={{ objectFit: "contain" }}
     />
   );
 };

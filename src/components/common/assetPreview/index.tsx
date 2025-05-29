@@ -16,7 +16,11 @@ import {
   ITag,
 } from "../../../models/applicationState";
 import { ImageAsset } from "./imageAsset";
-import { IAssetWithTimestamp, VideoAsset, IVideoAssetRef } from "./videoAsset";
+import {
+  IAssetWithTimestamp,
+  VideoAsset,
+  IVideoAssetRef,
+} from "./videoAsset/videoAsset";
 
 export interface IGenericContentSource {
   width: number;
@@ -38,8 +42,8 @@ export interface IAssetProps {
   childAssets?: IAsset[];
   controlsEnabled?: boolean;
   tags?: ITag[];
-  onLoaded?: (ContentSource: ContentSource) => void;
-  onActivated?: (contentSource: ContentSource) => void;
+  onLoaded?: (contentSource: ContentSource) => void;
+  onActivated?: (contentSource?: ContentSource) => void;
   onDeactivated?: (contentSource: ContentSource) => void;
   onChildAssetSelected?: (asset: IAsset) => void;
   onError?: (event: React.SyntheticEvent) => void;
@@ -93,6 +97,7 @@ export const AssetPreview = forwardRef<IAssetPreviewHandle, IAssetPreviewProps>(
     const [loaded, setLoaded] = useState(false);
     const [hasError, setHasError] = useState(false);
     const videoPreview = useRef<IVideoAssetRef | null>(null);
+    const rootAsset = asset.parent || asset;
 
     useEffect(() => {
       setLoaded(false);
@@ -110,9 +115,7 @@ export const AssetPreview = forwardRef<IAssetPreviewHandle, IAssetPreviewProps>(
     const handleAssetLoad = useCallback(
       (contentSource: ContentSource) => {
         setLoaded(true);
-        if (onLoaded) {
-          onLoaded(contentSource);
-        }
+        onLoaded?.(contentSource);
       },
       [onLoaded]
     );
@@ -121,9 +124,7 @@ export const AssetPreview = forwardRef<IAssetPreviewHandle, IAssetPreviewProps>(
       (e: SyntheticEvent) => {
         setHasError(true);
         setLoaded(true);
-        if (onError) {
-          onError(e);
-        }
+        onError?.(e);
       },
       [onError]
     );
@@ -158,7 +159,6 @@ export const AssetPreview = forwardRef<IAssetPreviewHandle, IAssetPreviewProps>(
     }));
 
     const renderAsset = () => {
-      const rootAsset = asset.parent || asset;
       const filteredChildAssets = (childAssets || []).filter(hasTimestamp);
       switch (asset.type) {
         case AssetType.Image:
@@ -183,7 +183,7 @@ export const AssetPreview = forwardRef<IAssetPreviewHandle, IAssetPreviewProps>(
               appSettings={appSettings}
               controlsEnabled={controlsEnabled}
               childAssets={filteredChildAssets}
-              autoPlay={autoPlay}
+              isForCanvas={autoPlay}
               onLoaded={handleAssetLoad}
               onError={handleError}
               onBeforeAssetChanged={onBeforeAssetChanged}
@@ -212,7 +212,6 @@ export const AssetPreview = forwardRef<IAssetPreviewHandle, IAssetPreviewProps>(
         classNames.push("portrait");
       }
     }
-
     return (
       <div className={classNames.join(" ")}>
         <div className="asset-preview-container">

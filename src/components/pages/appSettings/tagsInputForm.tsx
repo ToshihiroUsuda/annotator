@@ -76,7 +76,6 @@ export const TagsInputForm: React.FC<ITagsInputFormProps> = (props) => {
 
   const onExport = async (folderPath: string) => {
     const tagsFile = path.join(folderPath, constants.defaultTagsFile);
-    console.log(tagsFile);
     await LocalFileSystem.writeText(
       tagsFile,
       JSON.stringify(props.tags, null, 4)

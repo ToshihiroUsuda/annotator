@@ -94,7 +94,6 @@ const TaskProgressPage: React.FC<ITaskProgressProps> = (props) => {
       setNewData(newDataRead);
       return [caseDataRead, newDataRead] as const;
     } catch {
-      // console.log("database.json broken, skip update")
       return [caseData, newData] as const;
     }
   };

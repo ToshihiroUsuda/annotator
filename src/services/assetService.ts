@@ -113,7 +113,8 @@ export class AssetService {
         await LocalFileSystem.deleteFile(filePath);
       } catch (err) {
         // The file may not exist - that's OK
-        console.error(err);
+        // console.warn("thats ok");
+        // console.error();
       }
     }
     return metadata;

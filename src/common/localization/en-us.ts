@@ -483,5 +483,10 @@ export const english: IAppStrings = {
       message:
         "The database configuration file could not be found. Please verify the database settings and try again.",
     },
+    videoLoadError: {
+      title: "Error Loading Video",
+      message:
+        "An error occurred while loading the video asset. Please check the video file and try again.",
+    },
   },
 };

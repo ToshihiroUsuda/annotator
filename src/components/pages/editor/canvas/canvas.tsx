@@ -684,7 +684,7 @@ export default class Canvas extends React.Component<
     }
   };
 
-  private positionCanvas = (contentSource: ContentSource) => {
+  private positionCanvas = (contentSource?: ContentSource) => {
     if (!contentSource) {
       return;
     }

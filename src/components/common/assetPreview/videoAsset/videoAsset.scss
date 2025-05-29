@@ -1,0 +1,19 @@
+@use "../../../../assets/sass/theme.scss" as *;
+
+video {
+  position: static;
+  width: 100%;
+  height: calc(100% - 3em);
+}
+
+.control-bar {
+  position: relative;
+
+  &-disabled {
+    background-color: $darker-6;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+  }
+}
