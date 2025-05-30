@@ -24,7 +24,7 @@ import ControlBar from "./controlBar";
 import AssetStateSelector from "./assetStateSelector";
 import "./videoAsset.scss";
 
-type VideoState = {
+export type VideoState = {
   readyState: number;
   paused: boolean;
   seeking: boolean;
@@ -56,11 +56,9 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
   (props, ref) => {
     const {
       isForCanvas = false,
-      controlsEnabled = true,
       asset,
       projectName,
       appSettings,
-      onSeekTimeClick,
       childAssets,
       onLoaded,
       onBeforeAssetChanged,
@@ -86,7 +84,6 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
     const prevVideoStateRef = useRef<VideoState>(videoState);
 
     const videoRef = useRef<HTMLVideoElement>(null);
-    const timelineElement = useRef<Element>(null);
     const [visibleStates, setVisibleStates] = useState<AssetState[]>([]);
     const [visibleStatePolyInput, setvisibleStatePolyInput] = useState(false);
 
@@ -211,7 +208,6 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
       ) {
         setLoaded(true);
         if (onLoaded && videoRef.current) onLoaded(videoRef.current);
-        if (childAssets) addAssetTimelineTags(childAssets, state.duration);
         if (onActivated && videoRef.current) onActivated();
         if (isForCanvas) {
           const seekTime = asset.lastVisitedTimestamp || 10.0;
@@ -420,104 +416,104 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
     }, [getValidTimestamp, seekToTime]);
 
     // タイムライン描画
-    const renderChildAssetMarker = useCallback(
-      (childAsset: IAssetWithTimestamp, videoDuration: number) => {
-        let className = "";
-        switch (childAsset.state) {
-          case AssetState.Sample:
-            className = "video-timeline-sample";
-            break;
-          case AssetState.Store:
-            className = "video-timeline-store";
-            break;
-          case AssetState.Freeze:
-            className = "video-timeline-freeze";
-            break;
-          case AssetState.FreezeStore:
-            className = "video-timeline-freeze_store";
-            break;
-        }
-        if (
-          visibleStates.includes(childAsset.state) &&
-          !childAsset.comment &&
-          !childAsset.step &&
-          childAsset.polylineNumber === 0 &&
-          childAsset.polygonNumber === 0
-        ) {
-          return;
-        }
-        const childPosition = childAsset.timestamp / videoDuration;
-        const style = {
-          left: `calc( ${childPosition * 100}% - ${childPosition - 0.5}em)`,
-        };
-        return (
-          <div key={childAsset.timestamp}>
-            {childAsset.comment && (
-              <div className="comment-flag" style={style} />
-            )}
-            {childAsset.step &&
-              !(
-                childAsset.state === AssetState.Tracked ||
-                childAsset.state === AssetState.Interpolated
-              ) && <div className="step-flag" style={style} />}
-            {visibleStatePolyInput &&
-              (childAsset.polygonNumber || childAsset.polylineNumber) && (
-                <div className="poly-input-flag" style={style} />
-              )}
-            {visibleStates.indexOf(childAsset.state) >= 0 && (
-              <div
-                onClick={() => seekToTime(childAsset.timestamp)}
-                className={className}
-                style={style}
-              />
-            )}
-          </div>
-        );
-      },
-      [seekToTime, visibleStates, visibleStatePolyInput]
-    );
+    // const renderChildAssetMarker = useCallback(
+    //   (childAsset: IAssetWithTimestamp, videoDuration: number) => {
+    //     let className = "";
+    //     switch (childAsset.state) {
+    //       case AssetState.Sample:
+    //         className = "video-timeline-sample";
+    //         break;
+    //       case AssetState.Store:
+    //         className = "video-timeline-store";
+    //         break;
+    //       case AssetState.Freeze:
+    //         className = "video-timeline-freeze";
+    //         break;
+    //       case AssetState.FreezeStore:
+    //         className = "video-timeline-freeze_store";
+    //         break;
+    //     }
+    //     if (
+    //       visibleStates.includes(childAsset.state) &&
+    //       !childAsset.comment &&
+    //       !childAsset.step &&
+    //       childAsset.polylineNumber === 0 &&
+    //       childAsset.polygonNumber === 0
+    //     ) {
+    //       return;
+    //     }
+    //     const childPosition = childAsset.timestamp / videoDuration;
+    //     const style = {
+    //       left: `calc( ${childPosition * 100}% - ${childPosition - 0.5}em)`,
+    //     };
+    //     return (
+    //       <div key={childAsset.timestamp}>
+    //         {childAsset.comment && (
+    //           <div className="comment-flag" style={style} />
+    //         )}
+    //         {childAsset.step &&
+    //           !(
+    //             childAsset.state === AssetState.Tracked ||
+    //             childAsset.state === AssetState.Interpolated
+    //           ) && <div className="step-flag" style={style} />}
+    //         {visibleStatePolyInput &&
+    //           (childAsset.polygonNumber || childAsset.polylineNumber) && (
+    //             <div className="poly-input-flag" style={style} />
+    //           )}
+    //         {visibleStates.indexOf(childAsset.state) >= 0 && (
+    //           <div
+    //             onClick={() => seekToTime(childAsset.timestamp)}
+    //             className={className}
+    //             style={style}
+    //           />
+    //         )}
+    //       </div>
+    //     );
+    //   },
+    //   [seekToTime, visibleStates, visibleStatePolyInput]
+    // );
 
-    const renderTimeline = useCallback(
-      (childAssets: IAssetWithTimestamp[], videoDuration: number) => (
-        <div className={"video-timeline-container"}>
-          {childAssets.map((childAsset) =>
-            renderChildAssetMarker(childAsset, videoDuration)
-          )}
-        </div>
-      ),
-      [renderChildAssetMarker]
-    );
+    // const renderTimeline = useCallback(
+    //   (childAssets: IAssetWithTimestamp[], videoDuration: number) => (
+    //     <div className={"video-timeline-container"}>
+    //       {childAssets.map((childAsset) =>
+    //         renderChildAssetMarker(childAsset, videoDuration)
+    //       )}
+    //     </div>
+    //   ),
+    //   [renderChildAssetMarker]
+    // );
 
     // タイムラインタグ追加
-    const addAssetTimelineTags = useCallback(
-      (childAssets: IAssetWithTimestamp[], videoDuration: number) => {
-        if (!isForCanvas) return;
-        const assetTimelineTagLines = renderTimeline(
-          childAssets,
-          videoDuration
-        );
-        const timelineSelector =
-          ".editor-page-content-main-body .video-react-progress-control .video-timeline-root";
-        timelineElement.current = document.querySelector(timelineSelector);
-        if (!timelineElement.current) {
-          const progressControlSelector =
-            ".editor-page-content-main-body .video-react-progress-control";
-          const progressHolderElement = document.querySelector(
-            progressControlSelector
-          );
-          if (progressHolderElement) {
-            timelineElement.current = document.createElement("div");
-            timelineElement.current.className = "video-timeline-root";
-            progressHolderElement.appendChild(timelineElement.current);
-          }
-        }
-        if (timelineElement.current) {
-          const root = ReactDOMClient.createRoot(timelineElement.current);
-          root.render(assetTimelineTagLines);
-        }
-      },
-      [isForCanvas, renderTimeline]
-    );
+    // const addAssetTimelineTags = useCallback(
+    //   (childAssets: IAssetWithTimestamp[], videoDuration: number) => {
+    //     if (!isForCanvas) return;
+    //     const assetTimelineTagLines = renderTimeline(
+    //       childAssets,
+    //       videoDuration
+    //     );
+    //     const timelineSelector =
+    //       ".editor-page-content-main-body .video-react-progress-control .video-timeline-root";
+    //     timelineElement.current = document.querySelector(timelineSelector);
+    //     if (!timelineElement.current) {
+    //       const progressControlSelector =
+    //         ".editor-page-content-main-body .video-react-progress-control";
+    //       const progressHolderElement = document.querySelector(
+    //         progressControlSelector
+    //       );
+    //       if (progressHolderElement) {
+    //         timelineElement.current = document.createElement("div");
+    //         timelineElement.current.className = "video-timeline-root";
+    //         progressHolderElement.appendChild(timelineElement.current);
+    //       }
+    //     }
+    //     if (timelineElement.current) {
+    //       const root = ReactDOMClient.createRoot(timelineElement.current);
+    //       root.render(assetTimelineTagLines);
+    //     }
+    //   },
+    //   [isForCanvas, renderTimeline]
+    // );
 
     // asset.name変更時
     useEffect(() => {
@@ -526,8 +522,9 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
 
     // childAssets, visibleState, visibleStatePolyInput変更時
     useEffect(() => {
-      if (!videoRef.current) return;
-      addAssetTimelineTags(childAssets, videoState.duration);
+      // if (!videoRef.current) return;
+      // addAssetTimelineTags(childAssets, videoState.duration);
+      console.log("videoAsset updated", childAssets);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [childAssets, visibleStates, visibleStatePolyInput]);
 
@@ -552,25 +549,30 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
         {isForCanvas && loaded && (
           <ControlBar
             video={videoRef.current || undefined}
+            videoState={videoState}
+            visibleStates={visibleStates}
+            visibleStaetPolyInput={visibleStatePolyInput}
             frameExtractionRate={props.appSettings.frameExtractionRate}
-            appMode={appSettings.appMode}
+            appMode={props.appSettings.appMode}
             moveFrame={moveFrame}
             movePreviousExpectedFrame={movePreviousExpectedFrame}
             moveNextExpectedFrame={moveNextExpectedFrame}
             movePreviousTaggedFrame={movePreviousTaggedFrame}
             moveNextTaggedFrame={moveNextTaggedFrame}
             onTimeInputClicked={props.onSeekTimeClick}
+            seekToTime={seekToTime}
+            childAssets={childAssets}
           />
         )}
         <AssetStateSelector
           show={!!props.showAssetStateSelector}
           selectedStates={visibleStates}
           onChange={setVisibleStates}
-          showPolyInput={visibleStatePolyInput}
-          isPolyInputEnabled={
+          showPolyInput={
             !!props.showAssetStateSelector &&
             props.appSettings.appMode === AppMode.Internal
           }
+          isPolyInputEnabled={visibleStatePolyInput}
           onPolyInputChange={setvisibleStatePolyInput}
         />
       </>

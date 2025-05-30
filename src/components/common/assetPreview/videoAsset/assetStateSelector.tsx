@@ -1,6 +1,7 @@
 import React from "react";
+import { FaCircle, FaRegCircle } from "react-icons/fa6";
 import { AssetState } from "../../../../models/applicationState";
-import "./assetStateSeletor.scss";
+import "./assetStateSelector.scss";
 
 type AssetStateSelectorProps = {
   show: boolean;
@@ -28,27 +29,38 @@ const AssetStateSelector: React.FC<AssetStateSelectorProps> = (props) => {
   return (
     <div className="asset-state-selector">
       <a className="button sample" onClick={() => onChange(AssetState.Sample)}>
-        <i
+        {props.selectedStates.includes(AssetState.Sample) ? (
+          <FaCircle size={20} color={"green"} />
+        ) : (
+          <FaRegCircle size={20} color={"green"} />
+        )}
+        {/* <i
           className={`${props.selectedStates.includes(AssetState.Sample) ? "fas" : "far"} fa-circle`}
-        ></i>
+        ></i> */}
       </a>
       <a className="button store" onClick={() => onChange(AssetState.Store)}>
-        <i
-          className={`${props.selectedStates.includes(AssetState.Store) ? "fas" : "far"} fa-circle`}
-        ></i>
+        {props.selectedStates.includes(AssetState.Store) ? (
+          <FaCircle size={20} color={"red"} />
+        ) : (
+          <FaRegCircle size={20} color={"red"} />
+        )}
       </a>
       <a className="button freeze" onClick={() => onChange(AssetState.Freeze)}>
-        <i
-          className={`${props.selectedStates.includes(AssetState.Freeze) ? "fas" : "far"} fa-circle`}
-        ></i>
+        {props.selectedStates.includes(AssetState.Freeze) ? (
+          <FaCircle size={20} color={"yellow"} />
+        ) : (
+          <FaRegCircle size={20} color={"yellow"} />
+        )}
       </a>
       <a
         className="button freeze_store"
         onClick={() => onChange(AssetState.FreezeStore)}
       >
-        <i
-          className={`${props.selectedStates.includes(AssetState.FreezeStore) ? "fas" : "far"} fa-circle`}
-        ></i>
+        {props.selectedStates.includes(AssetState.FreezeStore) ? (
+          <FaCircle size={20} color={"deepskyblue"} />
+        ) : (
+          <FaRegCircle size={20} color={"deepskyblue"} />
+        )}
       </a>
       {/* 入力したPolygonの線を表示/非表示するボタン */}
       {props.showPolyInput && (
@@ -58,9 +70,11 @@ const AssetStateSelector: React.FC<AssetStateSelectorProps> = (props) => {
             props.onPolyInputChange?.(!props.isPolyInputEnabled);
           }}
         >
-          <i
-            className={`${props.isPolyInputEnabled ? "fas" : "far"} fa-circle`}
-          ></i>
+          {props.isPolyInputEnabled ? (
+            <FaCircle size={20} color={"tomato"} />
+          ) : (
+            <FaRegCircle size={20} color={"tomato"} />
+          )}
         </a>
       )}
     </div>
