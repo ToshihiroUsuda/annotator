@@ -1,6 +1,5 @@
 import React, { SyntheticEvent, ReactElement } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import "./messageBox.scss";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type MessageFormatHandler = (...params: any[]) => string;

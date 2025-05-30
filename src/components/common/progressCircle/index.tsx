@@ -1,6 +1,5 @@
 import React from 'react'
 import { Circle } from 'rc-progress'
-import './progressCircle.scss'
 
 export interface IProgressCircleProps {
     value: number

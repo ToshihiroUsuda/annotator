@@ -1,6 +1,5 @@
 import React from 'react'
 import { appInfo } from '../../common/appInfo'
-import './statusBar.scss'
 
 export const StatusBar: React.FC<React.PropsWithChildren> = ({ children }) => {
     return (

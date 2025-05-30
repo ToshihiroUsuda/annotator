@@ -6,7 +6,6 @@ import {
     ITag,
 } from '../../../models/applicationState'
 import RegionInputItem, { IRegionInputItemProps } from './regionInputItem'
-import './regionInput.scss'
 
 export interface IRegionInputProps {
     regions: IRegion[]
@@ -53,7 +52,7 @@ export class RegionInput extends React.Component<IRegionInputProps> {
     private renderRegionList = (regions: IRegion[]) => {
         return (
             <div className="regionlist">
-                <h6 className="condensed-list-header region-input-header bg-darker-2 p-2">
+                <h6 className="condensed-list-header region-input-header bg-black/[.10] p-2">
                     <span className="condensed-list-title region-input-title">
                         Regions
                     </span>

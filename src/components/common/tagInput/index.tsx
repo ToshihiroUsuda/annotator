@@ -1,6 +1,5 @@
 import React from 'react'
 import { IRegion, ITag } from '../../../models/applicationState'
-import './tagInput.scss'
 import TagInputItem, { ITagInputItemProps } from './tagInputItem'
 
 export interface ITagInputProps {

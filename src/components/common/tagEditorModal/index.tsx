@@ -5,7 +5,6 @@ import validator from "@rjsf/validator-ajv8";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { ITag } from "../../../models/applicationState";
 import { constants } from "../../../common/constants";
-import "./tagEditorModal.scss";
 
 const defaultValues = {
   tagColors: constants.tagColors,

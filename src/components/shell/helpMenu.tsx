@@ -10,7 +10,6 @@ import {
     KeyEventType,
 } from '../common/keyboardManager'
 import MessageBox from '../common/messageBox'
-import './helpMenu.scss'
 
 export interface IHelpMenuProps {
     onClose?: () => void

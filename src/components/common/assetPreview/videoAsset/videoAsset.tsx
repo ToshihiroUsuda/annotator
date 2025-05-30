@@ -22,7 +22,6 @@ import { AssetService } from "../../../../services/assetService";
 import { IAssetProps } from "..";
 import ControlBar from "./controlBar";
 import AssetStateSelector from "./assetStateSelector";
-import "./videoAsset.scss";
 
 export type VideoState = {
   readyState: number;

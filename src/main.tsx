@@ -1,10 +1,8 @@
 import React from "react";
 import ReactDOMClient from "react-dom/client";
 import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
-import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import App from "./App";
-import "./assets/css/bootstrap-theme-slate.css";
-import "./main.scss";
+import "./index.css";
 import registerMixins from "./registerMixins";
 import registerProviders from "./registerProviders";
 import * as serviceWorker from "./serviceWorker";

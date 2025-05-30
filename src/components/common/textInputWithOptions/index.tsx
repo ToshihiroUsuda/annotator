@@ -1,5 +1,4 @@
 import React, { ChangeEvent, useEffect, useState } from 'react'
-import './textInputWithOptions.scss'
 
 type TextInputWithOptionsProps = {
     value: string

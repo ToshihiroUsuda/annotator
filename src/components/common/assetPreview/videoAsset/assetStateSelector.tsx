@@ -1,7 +1,6 @@
 import React from "react";
 import { FaCircle, FaRegCircle } from "react-icons/fa6";
 import { AssetState } from "../../../../models/applicationState";
-import "./assetStateSelector.scss";
 
 type AssetStateSelectorProps = {
   show: boolean;

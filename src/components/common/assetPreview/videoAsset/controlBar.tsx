@@ -16,7 +16,6 @@ import { AppMode, AssetState } from "../../../../models/applicationState";
 import { formatTime } from "../../../../common/utils";
 import { VideoState } from "./videoAsset";
 import { IAssetWithTimestamp } from "./videoAsset";
-import "./controlBar.scss";
 
 type TControlBarProps = {
   video?: HTMLVideoElement;
