@@ -312,25 +312,27 @@ const Seekbar: React.FC<TSeekbarProps> = (props) => {
         <div className="time">{`${formatTime(currentTime)}`}</div>/
         <div className="time">{`${formatTime(props.videoState.duration)}`}</div>
       </div>
-      <div className="slider">
-        <Slider
-          value={currentTime}
-          min={0.0}
-          max={props.videoState.duration}
-          onChange={(value) => {
-            if (typeof value === "number") {
-              if (props.video) {
-                setCurrentTime(value);
-                props.video.currentTime = value;
+      <div className="slider-container">
+        <div className="slider">
+          <Slider
+            value={currentTime}
+            min={0.0}
+            max={props.videoState.duration}
+            onChange={(value) => {
+              if (typeof value === "number") {
+                if (props.video) {
+                  setCurrentTime(value);
+                  props.video.currentTime = value;
+                }
               }
-            }
-          }}
-        />
-        <div className="video-timeline-container">
-          {props.childAssets.map((childAsset) => {
-            console.log(childAsset);
-            return renderChildAssetMarker(childAsset);
-          })}
+            }}
+          />
+          <div className="video-timeline-container">
+            {props.childAssets.map((childAsset) => {
+              console.log(childAsset);
+              return renderChildAssetMarker(childAsset);
+            })}
+          </div>
         </div>
       </div>
     </div>

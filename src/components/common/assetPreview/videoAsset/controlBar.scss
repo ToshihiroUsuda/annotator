@@ -55,10 +55,79 @@
     flex-grow: 1;
     display: flex;
     align-items: center;
-    .slider {
+    .slider-container {
+      display: flex;
       flex-grow: 1;
-      // margin: 0 4px;
-      cursor: pointer;
+
+      position: relative;
+      margin: 0 8px;
+      .slider {
+        padding: 0;
+        flex-grow: 1;
+        // margin: 0 4px;
+        cursor: pointer;
+        .video-timeline-container {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+
+          .video-timeline {
+            &-sample,
+            &-store,
+            &-freeze,
+            &-freeze_store {
+              width: 2px;
+              position: absolute;
+              height: 100%;
+              cursor: pointer;
+              opacity: 0.75;
+              z-index: 2;
+            }
+
+            &-sample {
+              background-color: green;
+            }
+
+            &-store {
+              background-color: red;
+            }
+
+            &-freeze {
+              background-color: yellow;
+            }
+
+            &-freeze_store {
+              background-color: deepskyblue;
+            }
+          }
+          .comment-flag {
+            width: 2px;
+            position: absolute;
+            height: 50%;
+            opacity: 0.75;
+            z-index: 3;
+            background-color: orange;
+          }
+          .step-flag {
+            width: 2px;
+            position: absolute;
+            height: 50%;
+            opacity: 0.75;
+            z-index: 3;
+            background-color: magenta;
+          }
+          .poly-input-flag {
+            width: 2px;
+            position: absolute;
+            height: 30%;
+            opacity: 1;
+            z-index: 4;
+            background-color: tomato;
+          }
+        }
+      }
     }
     .time-display {
       display: flex;
@@ -91,67 +160,5 @@
         outline: none;
       }
     }
-  }
-}
-
-.video-timeline-container {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-
-  .video-timeline {
-    &-sample,
-    &-store,
-    &-freeze,
-    &-freeze_store {
-      width: 2px;
-      position: absolute;
-      height: 100%;
-      cursor: pointer;
-      opacity: 0.75;
-      z-index: 2;
-    }
-
-    &-sample {
-      background-color: green;
-    }
-
-    &-store {
-      background-color: red;
-    }
-
-    &-freeze {
-      background-color: yellow;
-    }
-
-    &-freeze_store {
-      background-color: deepskyblue;
-    }
-  }
-  .comment-flag {
-    width: 2px;
-    position: absolute;
-    height: 50%;
-    opacity: 0.75;
-    z-index: 3;
-    background-color: orange;
-  }
-  .step-flag {
-    width: 2px;
-    position: absolute;
-    height: 50%;
-    opacity: 0.75;
-    z-index: 3;
-    background-color: magenta;
-  }
-  .poly-input-flag {
-    width: 2px;
-    position: absolute;
-    height: 30%;
-    opacity: 1;
-    z-index: 4;
-    background-color: tomato;
   }
 }
