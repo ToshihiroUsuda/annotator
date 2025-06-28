@@ -1,1 +1,242 @@
 @import "tailwindcss";
+
+@layer base {
+  body {
+    user-select: none;
+  }
+
+  #root {
+    overflow: hidden;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  /* Custom scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.15);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+  }
+
+  ::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+@layer components {
+  .form-group.is-invalid .invalid-feedback,
+  .object-wrapper.is-invalid .invalid-feedback {
+    @apply block;
+  }
+
+  .form-group.is-invalid .form-control,
+  .object-wrapper.is-invalid .form-control {
+    @apply border border-red-500;
+  }
+
+  .form-group.is-valid .valid-feedback,
+  .object-wrapper.is-valid .valid-feedback {
+    @apply block;
+  }
+
+  .form-group.is-valid .form-control,
+  .object-wrapper.is-valid .form-control {
+    @apply border border-green-500;
+  }
+
+  .form-group .rc-checkbox,
+  .object-wrapper .rc-checkbox {
+    @apply ml-2;
+  }
+
+  .form-group .slider-value,
+  .object-wrapper .slider-value {
+    @apply font-medium text-sm;
+  }
+
+  /* Sidebar styles */
+
+  /* Help menu icon */
+  .app-help-menu-icon {
+    @apply text-gray-300 inline-block;
+  }
+
+  .app-help-menu-icon:hover {
+    @apply text-white bg-white/10 cursor-pointer;
+  }
+
+  /* Toastify container */
+  .Toastify .vott-toast-container {
+    @apply top-12;
+  }
+
+  @media (min-width: 1280px) {
+    form {
+      @apply max-w-6xl;
+    }
+  }
+
+  .form-row {
+    @apply flex items-center m-0;
+  }
+
+  .form-row .object-wrapper {
+    @apply flex flex-row flex-grow mb-0;
+  }
+
+  .form-row .form-group {
+    @apply mr-4 flex-grow;
+  }
+
+  .video-react {
+    background-color: #1e2024 !important;
+    font-family: inherit;
+  }
+
+  .video-react-video {
+    @apply static w-full;
+    height: calc(100% - 3em);
+  }
+
+  .video-react-control-bar {
+    @apply relative;
+  }
+
+  .video-react-control-bar-disabled {
+    @apply absolute w-full h-full z-30 bg-black/30;
+  }
+
+  .locked-tag {
+    @apply font-bold text-white;
+  }
+
+  #ct-zone {
+    @apply absolute;
+  }
+
+  #ct-zone.canvas-enabled {
+    @apply visible z-10 pointer-events-auto;
+  }
+
+  #ct-zone.canvas-disabled {
+    @apply invisible z-0;
+  }
+
+  #ct-zone .frame {
+    @apply z-20 absolute top-0 left-0 w-full h-full pointer-events-none border-solid border;
+  }
+
+  #ct-zone .frame.canvas-sample {
+    @apply border-green-500;
+  }
+
+  #ct-zone .frame.canvas-store {
+    @apply border-red-500;
+  }
+
+  #ct-zone .frame.canvas-freeze {
+    @apply border-yellow-500;
+  }
+
+  #ct-zone .frame.canvas-freeze_store {
+    @apply border-sky-400;
+  }
+
+  #ct-zone .frame.canvas-tracked {
+    @apply border-purple-500;
+  }
+
+  #ct-zone .frame .comment-frame {
+    @apply border-solid border-orange-500 absolute border;
+    top: 2px;
+    left: 2px;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px);
+  }
+
+  #ct-zone .frame .step-frame {
+    @apply border-solid border-fuchsia-500 absolute border;
+    top: 4px;
+    left: 4px;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+  }
+
+  #selection-zone {
+    @apply absolute top-0 left-0 h-full w-full z-0;
+  }
+
+  #editor-zone {
+    width: auto !important;
+    padding: 0 !important;
+    height: 100% !important;
+  }
+
+  .full-size {
+    @apply w-full h-full;
+  }
+
+  canvas {
+    background-color: #1e2024 !important;
+  }
+
+  .asset-error {
+    @apply text-sm font-medium mx-auto;
+    font-size: 85%;
+  }
+
+  .Resizer {
+    @apply bg-black opacity-20 z-10 box-border;
+    background-clip: padding-box;
+  }
+
+  .Resizer:hover {
+    @apply transition-all duration-500 ease-in-out;
+  }
+
+  .Resizer.horizontal {
+    height: 11px;
+    margin: -5px 0;
+    border-top: 5px solid rgba(255, 255, 255, 0);
+    border-bottom: 5px solid rgba(255, 255, 255, 0);
+    @apply cursor-row-resize w-full;
+  }
+
+  .Resizer.horizontal:hover {
+    border-top: 5px solid rgba(0, 0, 0, 0.5);
+    border-bottom: 5px solid rgba(0, 0, 0, 0.5);
+  }
+
+  .Resizer.vertical {
+    width: 11px;
+    margin: 0 -5px;
+    border-left: 5px solid rgba(255, 255, 255, 0);
+    border-right: 5px solid rgba(255, 255, 255, 0);
+    @apply cursor-col-resize;
+  }
+
+  .Resizer.vertical:hover {
+    border-left: 5px solid rgba(0, 0, 0, 0.5);
+    border-right: 5px solid rgba(0, 0, 0, 0.5);
+  }
+
+  .Resizer.disabled {
+    @apply cursor-not-allowed;
+  }
+
+  .Resizer.disabled:hover {
+    @apply border-transparent;
+  }
+}

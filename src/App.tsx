@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./App.scss";
 
 import { Route, Routes } from "react-router-dom";
 import { ErrorHandler } from "./components/common/errorHandler";
@@ -69,14 +68,14 @@ const App: React.FC = () => {
     <ErrorHandlerWrapper appError={appError} appErrorActions={appErrorActions}>
       <KeyboardManager>
         <BrowserRouter>
-          <div className={`app-shell platform-win32`}>
-            <div className="app-main">
+          <div className="flex flex-col h-screen">
+            <div className="flex flex-row h-[calc(100vh-1.5rem)] flex-grow">
               <Sidebar
                 project={currentProject}
                 report={currentReport}
                 appSettings={appSettings}
               />
-              <div className="app-content text-light">
+              <div className="flex-grow flex flex-col text-light">
                 <Routes>
                   <Route path="/" element={<PageRouter />} />
                   <Route path="/hospital-home" element={<TaskProgress />} />

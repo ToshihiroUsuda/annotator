@@ -16,7 +16,6 @@ import { AppMode, AssetState } from "../../../../models/applicationState";
 import { formatTime } from "../../../../common/utils";
 import { VideoState } from "./videoAsset";
 import { IAssetWithTimestamp } from "./videoAsset";
-import "./controlBar.scss";
 
 type TControlBarProps = {
   video?: HTMLVideoElement;
@@ -39,9 +38,9 @@ const ControlBar: React.FC<TControlBarProps> = (props) => {
   if (!props.video) return null;
 
   return (
-    <div className="video-control-bar">
+    <div className="bg-black relative flex flex-row w-full h-8 justify-evenly items-center px-4 text-xs">
       {props.video.seeking && (
-        <div className="video-control-bar-disabled"></div>
+        <div className="bg-black/60 absolute w-full h-full z-[3]"></div>
       )}
       <CustomVideoPlayerButton
         // accelerators={[]}
@@ -59,7 +58,6 @@ const ControlBar: React.FC<TControlBarProps> = (props) => {
         accelerators={["ArrowLeft", "B", "b"]}
         tooltip={strings.editorPage.videoPlayer.previousExpectedFrame.tooltip}
         onClick={props.movePreviousExpectedFrame}
-        // icon={"fa-caret-left fa-lg"}
       >
         <FaCaretLeft size={12} />
       </CustomVideoPlayerButton>
@@ -67,7 +65,6 @@ const ControlBar: React.FC<TControlBarProps> = (props) => {
         accelerators={["ArrowRight", "M", "m"]}
         tooltip={strings.editorPage.videoPlayer.nextExpectedFrame.tooltip}
         onClick={props.moveNextExpectedFrame}
-        // icon={"fa-caret-right fa-lg"}
       >
         <FaCaretRight size={12} />
       </CustomVideoPlayerButton>
@@ -75,7 +72,6 @@ const ControlBar: React.FC<TControlBarProps> = (props) => {
         accelerators={["Shift+ArrowLeft", "Z", "z"]}
         tooltip={strings.editorPage.videoPlayer.previous5ExpectedFrame.tooltip}
         onClick={() => props.moveFrame(-5)}
-        // icon={"fa-backward"}
       >
         <IconWithLabel
           icon={<FaBackward size={12} />}
@@ -87,7 +83,6 @@ const ControlBar: React.FC<TControlBarProps> = (props) => {
         accelerators={["Shift+ArrowRight", "C", "c"]}
         tooltip={strings.editorPage.videoPlayer.next5ExpectedFrame.tooltip}
         onClick={() => props.moveFrame(5)}
-        icon={"fa-forward"}
       >
         <IconWithLabel
           icon={<FaForward size={12} />}
@@ -99,7 +94,6 @@ const ControlBar: React.FC<TControlBarProps> = (props) => {
         accelerators={["CmdOrCtrl+ArrowLeft", "A", "a"]}
         tooltip={strings.editorPage.videoPlayer.previous30ExpectedFrame.tooltip}
         onClick={() => props.moveFrame(-props.frameExtractionRate)}
-        icon={"fa-backward"}
       >
         <IconWithLabel
           icon={<FaBackward size={12} />}
@@ -111,7 +105,6 @@ const ControlBar: React.FC<TControlBarProps> = (props) => {
         accelerators={["CmdOrCtrl+ArrowRight", "D", "d"]}
         tooltip={strings.editorPage.videoPlayer.next30ExpectedFrame.tooltip}
         onClick={() => props.moveFrame(props.frameExtractionRate)}
-        icon={"fa-forward"}
       >
         <IconWithLabel
           icon={<FaForward size={12} />}
@@ -132,7 +125,6 @@ const ControlBar: React.FC<TControlBarProps> = (props) => {
         accelerators={["Q", "q"]}
         tooltip={strings.editorPage.videoPlayer.previousTaggedFrame.tooltip}
         onClick={props.movePreviousTaggedFrame}
-        icon={"fas fa-step-backward"}
       >
         <FaBackwardStep size={12} />
       </CustomVideoPlayerButton>
@@ -140,7 +132,6 @@ const ControlBar: React.FC<TControlBarProps> = (props) => {
         accelerators={["E", "e"]}
         tooltip={strings.editorPage.videoPlayer.nextTaggedFrame.tooltip}
         onClick={props.moveNextTaggedFrame}
-        icon={"fa-step-forward"}
       >
         <FaForwardStep size={12} />
       </CustomVideoPlayerButton>
@@ -149,7 +140,6 @@ const ControlBar: React.FC<TControlBarProps> = (props) => {
           accelerators={["CmdOrCtrl+t"]}
           tooltip={"Seek to Time"}
           onClick={props.onTimeInputClicked}
-          icon={"fa-clock"}
         >
           <FaClock size={12} />
         </CustomVideoPlayerButton>
@@ -187,7 +177,7 @@ export const CustomVideoPlayerButton: React.FC<
         />
       )}
       <div
-        className="custom-video-player-button"
+        className="mx-2 cursor-pointer flex"
         title={props.tooltip}
         onClick={props.onClick}
       >
@@ -209,17 +199,17 @@ const IconWithLabel: React.FC<IconWithLabelProps> = ({
   iconPosition = "before",
 }) => {
   return (
-    <div className="icon-with-label">
+    <div className="flex items-center">
       {iconPosition === "before" && (
         <>
-          <div className="icon">{icon}</div>
-          <div className="label">{label}</div>
+          <div className="flex items-center mx-1">{icon}</div>
+          <div className="flex items-center">{label}</div>
         </>
       )}
       {iconPosition === "after" && (
         <>
-          <div className="label">{label}</div>
-          <div className="icon">{icon}</div>
+          <div className="flex items-center">{label}</div>
+          <div className="flex items-center mx-1">{icon}</div>
         </>
       )}
     </div>
@@ -259,16 +249,20 @@ const Seekbar: React.FC<TSeekbarProps> = (props) => {
     let className = "";
     switch (childAsset.state) {
       case AssetState.Sample:
-        className = "video-timeline-sample";
+        className =
+          "w-0.5 absolute h-full cursor-pointer opacity-75 z-[2] bg-green-500";
         break;
       case AssetState.Store:
-        className = "video-timeline-store";
+        className =
+          "w-0.5 absolute h-full cursor-pointer opacity-75 z-[2] bg-red-500";
         break;
       case AssetState.Freeze:
-        className = "video-timeline-freeze";
+        className =
+          "w-0.5 absolute h-full cursor-pointer opacity-75 z-[2] bg-yellow-500";
         break;
       case AssetState.FreezeStore:
-        className = "video-timeline-freeze_store";
+        className =
+          "w-0.5 absolute h-full cursor-pointer opacity-75 z-[2] bg-sky-400";
         break;
     }
     if (
@@ -286,15 +280,28 @@ const Seekbar: React.FC<TSeekbarProps> = (props) => {
     };
     return (
       <div key={childAsset.timestamp}>
-        {childAsset.comment && <div className="comment-flag" style={style} />}
+        {childAsset.comment && (
+          <div
+            className="w-0.5 absolute h-1/2 opacity-75 z-[3] bg-orange-500"
+            style={style}
+          />
+        )}
         {childAsset.step &&
           !(
             childAsset.state === AssetState.Tracked ||
             childAsset.state === AssetState.Interpolated
-          ) && <div className="step-flag" style={style} />}
+          ) && (
+            <div
+              className="w-0.5 absolute h-1/2 opacity-75 z-[3] bg-fuchsia-500"
+              style={style}
+            />
+          )}
         {props.visibleStatePolyInput &&
           (childAsset.polygonNumber || childAsset.polylineNumber) && (
-            <div className="poly-input-flag" style={style} />
+            <div
+              className="w-0.5 absolute h-[30%] opacity-100 z-[4] bg-orange-600"
+              style={style}
+            />
           )}
         {props.visibleStates.indexOf(childAsset.state) >= 0 && (
           <div
@@ -307,13 +314,13 @@ const Seekbar: React.FC<TSeekbarProps> = (props) => {
     );
   };
   return (
-    <div className="seekbar">
-      <div className="time-display">
-        <div className="time">{`${formatTime(currentTime)}`}</div>/
-        <div className="time">{`${formatTime(props.videoState.duration)}`}</div>
+    <div className="flex-grow flex items-center">
+      <div className="flex">
+        <div className="mx-1 w-14">{`${formatTime(currentTime)}`}</div>/
+        <div className="mx-1 w-14">{`${formatTime(props.videoState.duration)}`}</div>
       </div>
-      <div className="slider-container">
-        <div className="slider">
+      <div className="flex flex-grow relative mx-2">
+        <div className="p-0 flex-grow cursor-pointer">
           <Slider
             value={currentTime}
             min={0.0}
@@ -327,7 +334,7 @@ const Seekbar: React.FC<TSeekbarProps> = (props) => {
               }
             }}
           />
-          <div className="video-timeline-container">
+          <div className="absolute left-0 top-0 w-full h-full">
             {props.childAssets.map((childAsset) => {
               console.log(childAsset);
               return renderChildAssetMarker(childAsset);
@@ -362,8 +369,12 @@ const PlaybackRateSelector: React.FC<TPlaybackRateSelectorProps> = (props) => {
   };
 
   return (
-    <div className="playback-rate-selector">
-      <select value={playbackRate} onChange={handleChangePlaybackRate}>
+    <div className="">
+      <select
+        value={playbackRate}
+        onChange={handleChangePlaybackRate}
+        className="bg-transparent border-none appearance-none cursor-pointer text-white focus:outline-none"
+      >
         <option value={0.5}>0.5x</option>
         <option value={1.0}>1.0x</option>
         <option value={2.0}>2.0x</option>

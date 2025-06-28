@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { KeyboardRegistrationManager } from "./keyboardRegistrationManager";
 
 export enum KeyEventType {
@@ -43,8 +43,8 @@ function isDisabled(): boolean {
 export const KeyboardManager: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const keyboard = useMemo(() => new KeyboardRegistrationManager(), []);
-  const contextValue = useMemo(() => ({ keyboard }), [keyboard]);
+  const keyboard = new KeyboardRegistrationManager();
+  const contextValue = { keyboard };
 
   useEffect(() => {
     const onKeyboardEvent = (evt: KeyboardEvent) => {

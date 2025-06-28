@@ -8,7 +8,6 @@ import ArrayFieldTemplate from "../../../common/arrayField/arrayFieldTemplate";
 import FieldTemplate from "../../../common/customField/customFieldTemplate";
 import { ObjectFieldTemplate } from "../../../common/objectField/objectFieldTemplate";
 import validator from "@rjsf/validator-ajv8";
-import "./regionInfoInputModal.scss";
 
 type IFormShemaReord = Record<string, RJSFSchema>;
 type IUiSchemaReord = Record<string, Record<string, unknown>>;
@@ -83,31 +82,31 @@ export const RegionInfoInputModal: React.FC<IRegionInfoInputModalProps> = (
       });
   }, []);
 
-  const close = React.useCallback((): void => {
+  const close = (): void => {
     setIsOpen(false);
     props.onCancel?.();
-  }, [props]);
+  };
 
-  const reset = React.useCallback((): void => {
+  const reset = (): void => {
     setFormData({});
     if (props.region) {
       const updatedRegion = { ...props.region, regionInfo: {} };
       props.onSave(updatedRegion);
     }
     props.onReset?.();
-  }, [props.region]);
+  };
 
-  const handleFormChange = React.useCallback((args: IChangeEvent): void => {
+  const handleFormChange = (args: IChangeEvent): void => {
     setFormData(args.formData);
-  }, []);
+  };
 
-  const handleSave = React.useCallback((): void => {
+  const handleSave = (): void => {
     if (props.region) {
       const updatedRegion = { ...props.region, regionInfo: formData };
       props.onSave(updatedRegion);
       setIsOpen(false);
     }
-  }, [formData, props.region]);
+  };
 
   let isShow = isOpen;
   let formSchema: RJSFSchema | undefined = { type: "object", properties: {} };
@@ -142,7 +141,7 @@ export const RegionInfoInputModal: React.FC<IRegionInfoInputModalProps> = (
       </ModalHeader>
       <ModalBody>
         <Form
-          idPrefix={"report-form"}
+          idPrefix={"region-form"}
           schema={formSchemaRecord}
           uiSchema={uiSchemaRecord}
           templates={{
@@ -154,12 +153,7 @@ export const RegionInfoInputModal: React.FC<IRegionInfoInputModalProps> = (
           onChange={handleFormChange}
           validator={validator}
         >
-          <button
-            style={{
-              display: "none",
-            }}
-            type="submit"
-          ></button>
+          <button className="hidden" type="submit"></button>
         </Form>
       </ModalBody>
       <ModalFooter>

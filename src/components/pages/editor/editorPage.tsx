@@ -8,7 +8,6 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import * as shortid from "shortid";
 import { constants } from "../../../common/constants";
 import HtmlFileReader from "../../../common/htmlFileReader";
-import { strings } from "../../../common/strings";
 import {
   encodeFileURI,
   formatTime,
@@ -54,7 +53,6 @@ import { RegionInput } from "../../common/regionInput";
 import { TagInput } from "../../common/tagInput";
 import PropsWithNavigate from "../navigate";
 import Canvas, { ICanvasFilterSetting } from "./canvas/canvas";
-import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorSlider } from "./toolbar/editorSlider";
 import { EditorToolbar } from "./toolbar/editorToolbar";
@@ -589,7 +587,7 @@ export default class EditorPage extends React.Component<
     const appMode: AppMode = this.props.appSettings.appMode;
 
     return (
-      <div className="editor-page">
+      <div className="flex-grow flex flex-row relative">
         <PanelGroup
           direction="horizontal"
           autoSaveId="sideBar"
@@ -600,7 +598,7 @@ export default class EditorPage extends React.Component<
             minSize={10}
             maxSize={20}
             onResize={this.onSideBarResize}
-            className="editor-page-sidebar bg-lighter-1" // カスタムスタイル用
+            className="overflow-auto flex flex-col bg-white/5"
           >
             <EditorSideBar
               assets={rootAssets
@@ -614,11 +612,11 @@ export default class EditorPage extends React.Component<
               sideBarWidth={this.state.sidebarWidth}
             />
           </Panel>
-          <PanelResizeHandle className="resizer-handle" />
+          <PanelResizeHandle className="w-1 bg-white/20 flex-shrink-0 relative z-10" />
 
-          <Panel className="editor-page-content">
-            <div className="editor-page-content-main">
-              <div className="editor-page-content-main-header">
+          <Panel className="flex flex-row overflow-auto">
+            <div className="flex flex-col flex-grow">
+              <div className="flex flex-col">
                 <EditorToolbar
                   project={this.state.project}
                   items={this.state.toolbarItems}
@@ -636,7 +634,7 @@ export default class EditorPage extends React.Component<
                 />
               </div>
               <div
-                className="editor-page-content-main-body"
+                className="flex-grow relative overflow-hidden bg-black/25"
                 onWheel={this.onWheelUpDown}
               >
                 {selectedAsset && (
@@ -686,13 +684,13 @@ export default class EditorPage extends React.Component<
                       />
                     </Canvas>
                     {selectedAsset.asset.step && (
-                      <div className="step-info">
+                      <div className="flex flex-row p-0.5 absolute top-10 left-5 text-lg z-10">
                         {this.stepInformation[selectedAsset.asset.step] ||
                           selectedAsset.asset.step}
                       </div>
                     )}
                     {selectedAsset.asset.comment && (
-                      <div className="comment-content">
+                      <div className="flex flex-row p-0.5 absolute top-20 left-5 text-lg z-10">
                         {selectedAsset.asset.comment}
                       </div>
                     )}
@@ -700,8 +698,8 @@ export default class EditorPage extends React.Component<
                 )}
               </div>
             </div>
-            <div className="editor-page-right-sidebar">
-              <div className="editor-page-right-sidebar-taginput">
+            <div className="h-full flex flex-col ml-auto">
+              <div className="flex-grow overflow-y-auto">
                 {appMode !== AppMode.Internal && (
                   <TagInput
                     tags={this.dispTags}

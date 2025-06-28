@@ -1,308 +1,297 @@
-import React, { MouseEvent, SyntheticEvent } from 'react'
-import { IRegion, ITag, RegionState } from '../../../models/applicationState'
+import React, { MouseEvent, SyntheticEvent, useState } from "react";
+import {
+  FaTimes,
+  FaFastBackward,
+  FaBackward,
+  FaForward,
+  FaFastForward,
+  FaLock,
+  FaUnlock,
+  FaEye,
+  FaEyeSlash,
+  FaObjectUngroup,
+  FaTag,
+  FaClone,
+  FaEdit,
+  FaDrawPolygon,
+  FaProjectDiagram,
+} from "react-icons/fa";
+import { IRegion, ITag, RegionState } from "../../../models/applicationState";
 
 export interface IRegionClickProps {
-    ctrlKey?: boolean
-    altKey?: boolean
-    clickedColor?: boolean
+  ctrlKey?: boolean;
+  altKey?: boolean;
+  clickedColor?: boolean;
 }
 
 /**
  * Properties for region input item
  */
 export interface IRegionInputItemProps {
-    tags: ITag[]
-    region: IRegion
-    index: number
-    isSelected: boolean
-    appliedToSelectedRegions: boolean
-    isFrozen: boolean
-    isLocked: boolean
-    isHided: boolean
-    isFirst: boolean
-    isLast: boolean
-    onClick: (region: IRegion) => void
-    onTagChange: (region: IRegion, tag: string) => void
-    onConfidenceChange: (region: IRegion, confidence: number) => void
-    onFirstAssetClick: (region: IRegion) => void
-    onPreviousAssetClick: (region: IRegion) => void
-    onNextAssetClick: (region: IRegion) => void
-    onLastAssetClick: (region: IRegion) => void
-    onHideClick: (region: IRegion) => void
-    onLockClick: (region: IRegion) => void
-    onDeleteClick: (region: IRegion) => void
-    onInterpolateClick: (region: IRegion) => void
-    onIdClick: (region: IRegion) => void
+  tags: ITag[];
+  region: IRegion;
+  index: number;
+  isSelected: boolean;
+  appliedToSelectedRegions: boolean;
+  isFrozen: boolean;
+  isLocked: boolean;
+  isHided: boolean;
+  isFirst: boolean;
+  isLast: boolean;
+  onClick: (region: IRegion) => void;
+  onTagChange: (region: IRegion, tag: string) => void;
+  onConfidenceChange: (region: IRegion, confidence: number) => void;
+  onFirstAssetClick: (region: IRegion) => void;
+  onPreviousAssetClick: (region: IRegion) => void;
+  onNextAssetClick: (region: IRegion) => void;
+  onLastAssetClick: (region: IRegion) => void;
+  onHideClick: (region: IRegion) => void;
+  onLockClick: (region: IRegion) => void;
+  onDeleteClick: (region: IRegion) => void;
+  onInterpolateClick: (region: IRegion) => void;
+  onIdClick: (region: IRegion) => void;
 }
 
 export interface IRegionInputItemState {
-    /** Region is currently being edited */
-    selectedTag: string
-    selectedConfidence: number
-    isBeingEdited: boolean
-    /** Mode of region editing (text or color) */
+  /** Region is currently being edited */
+  selectedTag: string;
+  selectedConfidence: number;
+  isBeingEdited: boolean;
+  /** Mode of region editing (text or color) */
 }
 
 const unknownTag: ITag = {
-    name: 'Unknown',
-    color: '#808080',
-}
+  name: "Unknown",
+  color: "#808080",
+};
 
-const regionStateIcon: { [key in RegionState]: string } = {
-    [RegionState.Inputted]: 'fas fa-tag',
-    [RegionState.Tracked]: 'fas fa-clone',
-    [RegionState.Editted]: 'fas fa-edit',
-    [RegionState.Interpolated]: 'fas fa-object-ungroup',
-    [RegionState.PolygonInputted]: 'fas fa-draw-polygon',
-    [RegionState.PolylineInputted]: 'fas fa-project-diagram',
-} as const
+const regionStateIcon: { [key in RegionState]: React.ComponentType } = {
+  [RegionState.Inputted]: FaTag,
+  [RegionState.Tracked]: FaClone,
+  [RegionState.Editted]: FaEdit,
+  [RegionState.Interpolated]: FaObjectUngroup,
+  [RegionState.PolygonInputted]: FaDrawPolygon,
+  [RegionState.PolylineInputted]: FaProjectDiagram,
+} as const;
 
-export default class RegionInputItem extends React.Component<
-    IRegionInputItemProps,
-    IRegionInputItemState
-> {
-    public state: IRegionInputItemState = {
-        isBeingEdited: false,
-        selectedTag:
-            this.props.region.tags.length > 0
-                ? this.props.region.tags[0]
-                : unknownTag.name,
-        selectedConfidence: this.props.region.confidence || 1,
+const RegionInputItem: React.FC<IRegionInputItemProps> = (props) => {
+  const [isBeingEdited, setIsBeingEdited] = useState(false);
+  const [selectedTag, setSelectedTag] = useState(
+    props.region.tags.length > 0 ? props.region.tags[0] : unknownTag.name
+  );
+  const [selectedConfidence, setSelectedConfidence] = useState(
+    props.region.confidence || 1
+  );
+
+  const confidenceLevels = [
+    { value: 1, label: "High" },
+    { value: 2, label: "Middle" },
+    { value: 3, label: "Low" },
+  ];
+
+  const onNameClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    props.onClick(props.region);
+  };
+
+  const onTagChange = (e: SyntheticEvent) => {
+    e.stopPropagation();
+    const target = e.target as HTMLSelectElement;
+    setSelectedTag(target.value);
+    props.onTagChange(props.region, target.value);
+    target.blur();
+  };
+
+  const onConfidenceChange = (e: SyntheticEvent) => {
+    e.stopPropagation();
+    const target = e.target as HTMLSelectElement;
+    setSelectedConfidence(parseInt(target.value));
+    props.onConfidenceChange(props.region, parseInt(target.value));
+    target.blur();
+  };
+
+  const getItemClassName = () => {
+    const classNames = ["flex flex-row"];
+    if (props.isSelected) {
+      classNames.push(
+        "[&_.region-content.active]:mx-0.5 [&_.region-content.active]:my-0 [&_.region-content.active]:mr-0 [&_.region-content.active]:text-white [&_.region-content.active]:font-semibold [&_.region-content.active]:bg-black/60"
+      );
     }
-    private confidenceLevels = [
-        { value: 1, label: 'High' },
-        { value: 2, label: 'Middle' },
-        { value: 3, label: 'Low' },
-    ]
-
-    public render() {
-        let tagNames = this.props.tags.map((tag) => tag.name)
-        let color: string = unknownTag.color
-        if (this.props.region.tags.length > 0) {
-            const tag = this.props.tags.find(
-                (tag) => tag.name === this.props.region.tags[0]
-            )
-            if (tag) {
-                color = tag.color
-            }
-        } else {
-            tagNames = [...tagNames, unknownTag.name]
-        }
-
-        const style = {
-            background: color,
-        }
-        const isDeactive =
-            this.props.isFrozen || this.props.isHided || this.props.isLocked
-        return (
-            <div className={'region-item-block'}>
-                {this.props.region && (
-                    <li className={this.getItemClassName()} style={style}>
-                        <div
-                            className={`region-color ${isDeactive ? 'deactive' : 'active'}`}
-                        ></div>
-                        <div
-                            className={`region-content ${isDeactive ? 'deactive' : 'active'}`}
-                            onClick={this.onNameClick}
-                        >
-                            {this.getRegionInformation()}
-                            {this.getSelector(tagNames)}
-                            {this.getToolbar()}
-                        </div>
-                    </li>
-                )}
-            </div>
-        )
+    if (props.isLocked) {
+      classNames.push("opacity-25");
     }
+    return classNames.join(" ");
+  };
 
-    private onNameClick = (e: MouseEvent) => {
-        e.stopPropagation()
-        this.props.onClick(this.props.region)
+  const getRegionInformation = () => {
+    let name = unknownTag.name;
+    if (props.region.tags.length > 0) {
+      const regionTag = props.tags.find(
+        (tag) => props.region.tags[0] === tag.name
+      );
+      if (regionTag) {
+        name = regionTag.dispName || regionTag.name;
+      }
     }
 
-    private onTagChange = (e: SyntheticEvent) => {
-        e.stopPropagation()
-        const target = e.target as HTMLSelectElement
-        this.setState({ selectedTag: target.value }, () =>
-            this.props.onTagChange(this.props.region, target.value)
-        )
-        target.blur()
-    }
+    return (
+      <div className={"flex flex-row min-h-[1.8rem] items-center"}>
+        <div title={`${name}-${props.region.id}`} className="flex-grow">
+          <div className="flex flex-row">
+            <span className="ml-1.5">
+              {React.createElement(regionStateIcon[props.region.state])}
+            </span>
+            <span className="text-[15px] mt-auto px-2">{name}</span>
+            <span className="mt-auto mb-auto ml-auto text-[10px] font-normal px-2">
+              <div
+                onClick={(e) => {
+                  if (e.shiftKey && e.ctrlKey) {
+                    props.onIdClick(props.region);
+                  }
+                }}
+              >
+                {props.region.id}
+              </div>
+            </span>
+            <span
+              className={`mt-auto mb-auto mr-1.5 ${props.isFrozen || props.isHided || props.isLocked ? "opacity-25 cursor-default" : ""}`}
+              onClick={() => props.onDeleteClick(props.region)}
+            >
+              <FaTimes />
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
-    private onConfidenceChange = (e: SyntheticEvent) => {
-        e.stopPropagation()
-        const target = e.target as HTMLSelectElement
-        this.setState({ selectedConfidence: parseInt(target.value) }, () =>
-            this.props.onConfidenceChange(
-                this.props.region,
-                parseInt(target.value)
-            )
-        )
-        target.blur()
-    }
+  const getSelector = (tagNames: string[]) => {
+    return (
+      <div className="overflow-hidden p-0.5 text-center flex flex-row">
+        <div className="w-[70%] relative rounded-sm bg-white/32 box-border p-0.5 before:absolute before:top-2.5 before:right-0.5 before:w-0 before:h-0 before:p-0 before:content-[''] before:border-l-[6px] before:border-r-[6px] before:border-t-[6px] before:border-l-transparent before:border-r-transparent before:border-t-gray-600 before:pointer-events-none">
+          <select
+            className="w-full text-indent-px text-ellipsis border-0 outline-0 bg-transparent bg-none shadow-none appearance-none p-1 px-2.5 px-1 text-gray-600"
+            value={selectedTag}
+            onClick={onNameClick}
+            onChange={onTagChange}
+            disabled={props.isLocked}
+          >
+            {tagNames.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="w-[30%] relative rounded-sm bg-white/32 box-border p-0.5 before:absolute before:top-2.5 before:right-0.5 before:w-0 before:h-0 before:p-0 before:content-[''] before:border-l-[6px] before:border-r-[6px] before:border-t-[6px] before:border-l-transparent before:border-r-transparent before:border-t-gray-600 before:pointer-events-none">
+          <select
+            className="w-full text-indent-px text-ellipsis border-0 outline-0 bg-transparent bg-none shadow-none appearance-none p-1 px-2.5 px-1 text-gray-600"
+            value={selectedConfidence}
+            onClick={onNameClick}
+            onChange={onConfidenceChange}
+            disabled={props.isLocked}
+          >
+            {confidenceLevels.map((level) => (
+              <option key={level.value} value={level.value}>
+                {level.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    );
+  };
 
-    private getItemClassName = () => {
-        const classNames = ['region-item']
-        if (this.props.isSelected) {
-            classNames.push('selected')
-        }
-        if (this.props.appliedToSelectedRegions) {
-            classNames.push('applied')
-        }
-        return classNames.join(' ')
-    }
+  const getToolbar = () => {
+    return (
+      <div className="flex flex-row">
+        <div
+          className={`flex w-full ${props.isFirst ? "opacity-25 cursor-default" : ""}`}
+          onClick={() => props.onFirstAssetClick(props.region)}
+        >
+          <FaFastBackward className="m-auto cursor-pointer text-gray-300 p-px" />
+        </div>
+        <div
+          className={`flex w-full ${props.isFirst ? "opacity-25 cursor-default" : ""}`}
+          onClick={() => props.onPreviousAssetClick(props.region)}
+        >
+          <FaBackward className="m-auto cursor-pointer text-gray-300 p-px" />
+        </div>
+        <div
+          className={`flex w-full ${props.isLast ? "opacity-25 cursor-default" : ""}`}
+          onClick={() => props.onNextAssetClick(props.region)}
+        >
+          <FaForward className="m-auto cursor-pointer text-gray-300 p-px" />
+        </div>
+        <div
+          className={`flex w-full ${props.isLast ? "opacity-25 cursor-default" : ""}`}
+          onClick={() => props.onLastAssetClick(props.region)}
+        >
+          <FaFastForward className="m-auto cursor-pointer text-gray-300 p-px" />
+        </div>
+        <div
+          className={`flex w-full ${props.isFrozen || props.isHided ? "opacity-25 cursor-default" : ""}`}
+          onClick={() => props.onLockClick(props.region)}
+        >
+          {props.isLocked ? (
+            <FaUnlock className="m-auto cursor-pointer text-gray-300 p-px" />
+          ) : (
+            <FaLock className="m-auto cursor-pointer text-gray-300 p-px" />
+          )}
+        </div>
+        <div
+          className={`flex w-full ${props.isFrozen ? "opacity-25 cursor-default" : ""}`}
+          onClick={() => props.onHideClick(props.region)}
+        >
+          {props.isHided ? (
+            <FaEye className="m-auto cursor-pointer text-gray-300 p-px" />
+          ) : (
+            <FaEyeSlash className="m-auto cursor-pointer text-gray-300 p-px" />
+          )}
+        </div>
+        <div
+          className={`flex w-full ${props.isFrozen || props.isHided || props.isLocked ? "opacity-25 cursor-default" : ""}`}
+          onClick={() => props.onInterpolateClick(props.region)}
+        >
+          <FaObjectUngroup className="m-auto cursor-pointer text-gray-300 p-px" />
+        </div>
+      </div>
+    );
+  };
 
-    private getRegionInformation = () => {
-        let name = unknownTag.name
-        if (this.props.region.tags.length > 0) {
-            const regionTag = this.props.tags.find(
-                (tag) => this.props.region.tags[0] === tag.name
-            )
-            if (regionTag) {
-                name = regionTag.dispName || regionTag.name
-            }
-        }
-
-        return (
-            <div className={'region-name-container'}>
-                <div
-                    title={`${name}-${this.props.region.id}`}
-                    className="region-name-body"
-                >
-                    <div className="region-name-title">
-                        <a className="region-state-icon">
-                            <i
-                                className={
-                                    regionStateIcon[this.props.region.state]
-                                }
-                            />
-                        </a>
-                        <span className="region-name-text px-2">{name}</span>
-                        <span className="region-id-text px-2">
-                            <div
-                                onClick={(e) => {
-                                    if (e.shiftKey && e.ctrlKey) {
-                                        this.props.onIdClick(this.props.region)
-                                    }
-                                }}
-                            >
-                                {this.props.region.id}
-                            </div>
-                        </span>
-                        <span
-                            className={`delete-region ${this.props.isFrozen || this.props.isHided || this.props.isLocked ? 'deactive' : 'active'}`}
-                            onClick={() =>
-                                this.props.onDeleteClick(this.props.region)
-                            }
-                        >
-                            <i className="fas fa-times"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        )
+  let tagNames = props.tags.map((tag) => tag.name);
+  let color: string = unknownTag.color;
+  if (props.region.tags.length > 0) {
+    const tag = props.tags.find((tag) => tag.name === props.region.tags[0]);
+    if (tag) {
+      color = tag.color;
     }
+  } else {
+    tagNames = [...tagNames, unknownTag.name];
+  }
 
-    private getSelector = (tagNames: string[]) => {
-        return (
-            <div className="tag-select">
-                <div className="tag selecter">
-                    <select
-                        value={this.state.selectedTag}
-                        onClick={this.onNameClick}
-                        onChange={this.onTagChange}
-                        disabled={this.props.isLocked}
-                    >
-                        {tagNames.map((name) => (
-                            <option key={name} value={name}>
-                                {name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="confidence selecter">
-                    <select
-                        value={this.state.selectedConfidence}
-                        onClick={this.onNameClick}
-                        onChange={this.onConfidenceChange}
-                        disabled={this.props.isLocked}
-                    >
-                        {this.confidenceLevels.map((level) => (
-                            <option key={level.value} value={level.value}>
-                                {level.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-        )
-    }
+  const style = {
+    background: color,
+  };
+  const isDeactive = props.isFrozen || props.isHided || props.isLocked;
 
-    private getToolbar = () => {
-        return (
-            <div className="region-toolbar">
-                <div
-                    className={`button first-region ${this.props.isFirst ? 'deactive' : 'active'}`}
-                    onClick={() =>
-                        this.props.onFirstAssetClick(this.props.region)
-                    }
-                >
-                    <i className="fas fa-fast-backward"></i>
-                </div>
-                <div
-                    className={`button previous-region ${this.props.isFirst ? 'deactive' : 'active'}`}
-                    onClick={() =>
-                        this.props.onPreviousAssetClick(this.props.region)
-                    }
-                >
-                    <i className="fas fa-backward"></i>
-                </div>
-                <div
-                    className={`button next-region ${this.props.isLast ? 'deactive' : 'active'}`}
-                    onClick={() =>
-                        this.props.onNextAssetClick(this.props.region)
-                    }
-                >
-                    <i className="fas fa-forward"></i>
-                </div>
-                <div
-                    className={`button last-region ${this.props.isLast ? 'deactive' : 'active'}`}
-                    onClick={() =>
-                        this.props.onLastAssetClick(this.props.region)
-                    }
-                >
-                    <i className="fas fa-fast-forward"></i>
-                </div>
-                <div
-                    className={`button lock-region ${this.props.isFrozen || this.props.isHided ? 'deactive' : 'active'}`}
-                    onClick={() => this.props.onLockClick(this.props.region)}
-                >
-                    <i
-                        className={`fas fa-${this.props.isLocked ? 'unlock' : 'lock'}`}
-                    ></i>
-                </div>
-                <div
-                    className={`button hide-region ${this.props.isFrozen ? 'deactive' : 'active'}`}
-                    onClick={() => this.props.onHideClick(this.props.region)}
-                >
-                    <i
-                        className={`fas fa-${this.props.isHided ? 'eye' : 'eye-slash'}`}
-                    ></i>
-                </div>
-                {/* <div className={`button delete-region ${this.props.isFrozen || this.props.isHided || this.props.isLocked ? "deactive": "active"}`}
-                    onClick={() => this.props.onDeleteClick(this.props.region)}
-               >
-                   <i className="fas fa-trash"></i>
-               </div> */}
-                <div
-                    className={`button interpolate-region ${this.props.isFrozen || this.props.isHided || this.props.isLocked ? 'deactive' : 'active'}`}
-                    onClick={() =>
-                        this.props.onInterpolateClick(this.props.region)
-                    }
-                >
-                    <i className="fas fa-object-ungroup"></i>
-                </div>
-            </div>
-        )
-    }
-}
+  return (
+    <div className={"my-0.5"}>
+      {props.region && (
+        <li className={getItemClassName()} style={style}>
+          <div className={`w-3 ${isDeactive ? "bg-black/60" : ""}`} />
+          <div
+            className={`flex-1 bg-black/60 region-content ${isDeactive ? "deactive cursor-default opacity-25" : "active hover:bg-black/32 cursor-pointer"}`}
+            onClick={onNameClick}
+          >
+            {getRegionInformation()}
+            {getSelector(tagNames)}
+            {getToolbar()}
+          </div>
+        </li>
+      )}
+    </div>
+  );
+};
+
+export default RegionInputItem;

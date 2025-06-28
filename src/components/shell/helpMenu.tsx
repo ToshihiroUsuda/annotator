@@ -1,174 +1,152 @@
-import React from 'react'
-import { strings } from '../../common/strings'
+import React, { useState, useContext } from "react";
+import { strings } from "../../common/strings";
 import {
-    IKeyboardBindingProps,
-    KeyboardBinding,
-} from '../common/keyboardBinding'
-import {
-    IKeyboardContext,
-    KeyboardContext,
-    KeyEventType,
-} from '../common/keyboardManager'
-import MessageBox from '../common/messageBox'
-import './helpMenu.scss'
+  IKeyboardBindingProps,
+  KeyboardBinding,
+} from "../common/keyboardBinding";
+import { KeyboardContext, KeyEventType } from "../common/keyboardManager";
+import MessageBox from "../common/messageBox";
 
 export interface IHelpMenuProps {
-    onClose?: () => void
+  onClose?: () => void;
 }
 
-export interface IHelpMenuState {
-    show: boolean
-}
+export const HelpMenu = (props: IHelpMenuProps) => {
+  const context = useContext(KeyboardContext);
+  const [show, setShow] = useState(false);
+  const icon: string = "fa-question-circle";
 
-export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
-    public static contextType = KeyboardContext
-    declare public context: IKeyboardContext
-
-    public state = {
-        show: false,
+  const onClose = () => {
+    setShow(false);
+    if (props.onClose) {
+      props.onClose();
     }
-    private icon: string = 'fa-question-circle'
+  };
 
-    public render() {
-        return (
-            <div
-                className={'help-menu-button'}
-                onClick={() => this.setState({ show: true })}
-            >
-                <i className={`fas ${this.icon}`} />
-                <KeyboardBinding
-                    displayName={strings.editorPage.help.title}
-                    accelerators={['CmdOrCtrl+H', 'CmdOrCtrl+h']}
-                    handler={() => this.setState({ show: !this.state.show })}
-                    icon={this.icon}
-                    keyEventType={KeyEventType.KeyDown}
-                />
-                <MessageBox
-                    title={strings.titleBar.help}
-                    message={this.getHelpBody()}
-                    show={this.state.show}
-                    onCancel={this.onClose}
-                    hideFooter={true}
-                />
-            </div>
-        )
+  const getHelpBody = () => {
+    const registrations =
+      context?.keyboard.getRegistrations()[KeyEventType.KeyDown];
+    if (!registrations) {
+      return "";
     }
 
-    private onClose = () => {
-        this.setState({ show: false })
-        if (this.props.onClose) {
-            this.props.onClose()
+    const groupKeys = groupKeysFunc(registrations);
+
+    return (
+      <div className="container">
+        {groupKeys.map((group) =>
+          group.length ? getRegistrationRow(group, registrations) : null
+        )}
+      </div>
+    );
+  };
+
+  const groupKeysFunc = (registrations: {
+    [key: string]: IKeyboardBindingProps;
+  }) => {
+    const allKeys = Object.keys(registrations);
+    const caseConsolidatedKeys = consolidateKeyCasings(allKeys);
+
+    const groups = [];
+    const alreadyGrouped = new Set();
+
+    for (const key of caseConsolidatedKeys) {
+      const group = [key];
+      if (!alreadyGrouped.has(key)) {
+        alreadyGrouped.add(key);
+        for (const otherKey of caseConsolidatedKeys) {
+          if (
+            !alreadyGrouped.has(otherKey) &&
+            bindingEquals(registrations[key], registrations[otherKey])
+          ) {
+            group.push(otherKey);
+            alreadyGrouped.add(otherKey);
+          }
         }
+        groups.push(group);
+      }
     }
+    return groups;
+  };
 
-    private getHelpBody = () => {
-        const registrations =
-            this.context.keyboard.getRegistrations()[KeyEventType.KeyDown]
-        if (!registrations) {
-            return ''
-        }
+  const bindingEquals = (
+    binding1: IKeyboardBindingProps,
+    binding2: IKeyboardBindingProps
+  ) => {
+    return (
+      binding1 &&
+      binding2 &&
+      binding1.displayName === binding2.displayName &&
+      binding1.handler === binding2.handler
+    );
+  };
 
-        const groupKeys = this.groupKeys(registrations)
-
-        return (
-            <div className="help-body container">
-                {groupKeys.map((group) =>
-                    group.length
-                        ? this.getRegistrationRow(group, registrations)
-                        : null
-                )}
-            </div>
-        )
+  const consolidateKeyCasings = (allKeys: string[]): string[] => {
+    const lowerRegistrations: Record<string, string> = {};
+    for (const key of allKeys) {
+      const lowerKey = key.toLowerCase();
+      if (!lowerRegistrations[lowerKey]) {
+        lowerRegistrations[lowerKey] = key;
+      }
     }
+    return Object.keys(lowerRegistrations).map(
+      (lowerKey) => lowerRegistrations[lowerKey]
+    );
+  };
 
-    private groupKeys = (registrations: {
-        [key: string]: IKeyboardBindingProps
-    }) => {
-        const allKeys = Object.keys(registrations)
-        const caseConsolidatedKeys = this.consolidateKeyCasings(allKeys)
-
-        const groups = []
-        const alreadyGrouped = new Set()
-
-        for (const key of caseConsolidatedKeys) {
-            const group = [key]
-            if (!alreadyGrouped.has(key)) {
-                alreadyGrouped.add(key)
-                for (const otherKey of caseConsolidatedKeys) {
-                    if (
-                        !alreadyGrouped.has(otherKey) &&
-                        this.bindingEquals(
-                            registrations[key],
-                            registrations[otherKey]
-                        )
-                    ) {
-                        group.push(otherKey)
-                        alreadyGrouped.add(otherKey)
-                    }
-                }
-                groups.push(group)
-            }
-        }
-        return groups
+  const getRegistrationRow = (
+    group: string[],
+    registrations: { [key: string]: IKeyboardBindingProps }
+  ) => {
+    const keyRegistration = registrations[group[0]];
+    if (keyRegistration) {
+      return (
+        <div
+          key={keyRegistration.displayName}
+          className={
+            "text-gray-300 p-0.5 hover:text-white hover:bg-white/10 row"
+          }
+        >
+          <div
+            className={`col-1 align-bottom py-1 px-3.5 ${
+              keyRegistration.icon ? `fas ${keyRegistration.icon}` : ""
+            }`}
+          />
+          <div className="col-4 font-bold">{stringifyGroup(group)}</div>
+          <div className="col-6">{keyRegistration.displayName}</div>
+        </div>
+      );
     }
+  };
 
-    private bindingEquals(
-        binding1: IKeyboardBindingProps,
-        binding2: IKeyboardBindingProps
-    ) {
-        return (
-            binding1 &&
-            binding2 &&
-            binding1.displayName === binding2.displayName &&
-            binding1.handler === binding2.handler
-        )
-    }
+  const stringifyGroup = (group: string[]): string => {
+    return group.length < 3
+      ? group.join(", ")
+      : `${group[0]} - ${group[group.length - 1]}`;
+  };
 
-    private consolidateKeyCasings = (allKeys: string[]): string[] => {
-        const lowerRegistrations: Record<string, string> = {}
-        for (const key of allKeys) {
-            const lowerKey = key.toLowerCase()
-            if (!lowerRegistrations[lowerKey]) {
-                lowerRegistrations[lowerKey] = key
-            }
-        }
-        return Object.keys(lowerRegistrations).map(
-            (lowerKey) => lowerRegistrations[lowerKey]
-        )
-    }
-
-    private getRegistrationRow = (
-        group: string[],
-        registrations: { [key: string]: IKeyboardBindingProps }
-    ) => {
-        const keyRegistration = registrations[group[0]]
-        if (keyRegistration) {
-            return (
-                <div
-                    key={keyRegistration.displayName}
-                    className={'help-key row'}
-                >
-                    <div
-                        className={`col-1 keybinding-icon ${
-                            keyRegistration.icon
-                                ? `fas ${keyRegistration.icon}`
-                                : ''
-                        }`}
-                    />
-                    <div className="col-4 keybinding-accelerator">
-                        {this.stringifyGroup(group)}
-                    </div>
-                    <div className="col-6 keybinding-name">
-                        {keyRegistration.displayName}
-                    </div>
-                </div>
-            )
-        }
-    }
-
-    private stringifyGroup(group: string[]): string {
-        return group.length < 3
-            ? group.join(', ')
-            : `${group[0]} - ${group[group.length - 1]}`
-    }
-}
+  return (
+    <div
+      className={
+        "py-1.5 px-2.5 text-gray-300 inline-block hover:text-white hover:bg-white/10 hover:cursor-pointer"
+      }
+      onClick={() => setShow(true)}
+    >
+      <i className={`fas ${icon}`} />
+      <KeyboardBinding
+        displayName={strings.editorPage.help.title}
+        accelerators={["CmdOrCtrl+H", "CmdOrCtrl+h"]}
+        handler={() => setShow(!show)}
+        icon={icon}
+        keyEventType={KeyEventType.KeyDown}
+      />
+      <MessageBox
+        title={strings.titleBar.help}
+        message={getHelpBody()}
+        show={show}
+        onCancel={onClose}
+        hideFooter={true}
+      />
+    </div>
+  );
+};

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 // import ReactDOM from 'react-dom'
 import {
     IRegion,
@@ -6,7 +6,6 @@ import {
     ITag,
 } from '../../../models/applicationState'
 import RegionInputItem, { IRegionInputItemProps } from './regionInputItem'
-import './regionInput.scss'
 
 export interface IRegionInputProps {
     regions: IRegion[]
@@ -29,136 +28,132 @@ export interface IRegionInputProps {
     onIdClick: (region: IRegion) => void
 }
 
-export class RegionInput extends React.Component<IRegionInputProps> {
-    private regionItemRefs: Map<string, RegionInputItem> = new Map<
-        string,
-        RegionInputItem
-    >()
-    // private portalDiv = document.createElement('div')
+export const RegionInput: React.FC<IRegionInputProps> = (props) => {
+    const regionItemRefs = useRef<Map<string, any>>(new Map())
+    // const portalDiv = document.createElement('div')
 
-    public render() {
-        let regions = this.props.regions
-        if (this.props.selectedRegions.length > 0) {
-            if (this.props.selectedRegions[0].tags.length === 0) {
-                regions = [...regions, ...this.props.selectedRegions]
-            }
-        }
+    const renderRegionList = (regions: IRegion[]) => {
         return (
-            <div className="region-input condensed-list">
-                {this.renderRegionList(regions)}
-            </div>
-        )
-    }
-
-    private renderRegionList = (regions: IRegion[]) => {
-        return (
-            <div className="regionlist">
-                <h6 className="condensed-list-header region-input-header bg-darker-2 p-2">
-                    <span className="condensed-list-title region-input-title">
+            <div className="h-full overflow-x-hidden overflow-y-auto">
+                <h6 className="text-xs text-gray-100 m-0 uppercase bg-black/10 p-2 flex flex-row">
+                    <span className="flex-1">
                         Regions
                     </span>
                 </h6>
-                <div className="condensed-list-body">
+                <div className="flex-grow flex overflow-auto flex-col relative">
                     <div className="region-input-items">
-                        {this.renderRegionItems(regions)}
+                        {renderRegionItems(regions)}
                     </div>
                 </div>
             </div>
         )
     }
 
-    private renderRegionItems = (regions: IRegion[]) => {
+    const renderRegionItems = (regions: IRegion[]) => {
         if (!regions) {
             return
         }
-        const props = this.createRegionItemProps(regions)
-        this.regionItemRefs.clear()
-        return props.map((prop) => (
+        const propsList = createRegionItemProps(regions)
+        regionItemRefs.current.clear()
+        return propsList.map((prop) => (
             <RegionInputItem
                 key={prop.region.id}
-                ref={(item) => this.setRegionItemRef(item, prop.region)}
                 {...prop}
             />
         ))
     }
 
-    private setRegionItemRef = (
-        item: RegionInputItem | null,
+    const setRegionItemRef = (
+        item: any,
         region: IRegion
     ) => {
         if (item) {
-            this.regionItemRefs.set(region.id, item)
+            regionItemRefs.current.set(region.id, item)
         }
     }
 
-    private createRegionItemProps = (
+    const createRegionItemProps = (
         regions: IRegion[]
     ): IRegionInputItemProps[] => {
-        // const selectedRegionSet = this.getSelectedRegionSet();
+        // const selectedRegionSet = getSelectedRegionSet();
 
         return regions.map((region, index) => {
-            const regionMetadata = this.props.regionMetadata
-                ? this.props.regionMetadata[region.id]
+            const regionMetadata = props.regionMetadata
+                ? props.regionMetadata[region.id]
                 : null
             const isLocked = regionMetadata ? regionMetadata.isLocked : false
             const isHided = regionMetadata ? regionMetadata.isHidden : false
             const isFirst = regionMetadata
                 ? !regionMetadata.firstTimestamp ||
-                  regionMetadata.firstTimestamp === this.props.timestamp
+                  regionMetadata.firstTimestamp === props.timestamp
                 : false
             const isLast = regionMetadata
                 ? !regionMetadata.lastTimestamp ||
-                  regionMetadata.lastTimestamp === this.props.timestamp
+                  regionMetadata.lastTimestamp === props.timestamp
                 : false
-            const props: IRegionInputItemProps = {
+            const regionProps: IRegionInputItemProps = {
                 index,
                 region,
-                tags: this.props.tags,
-                isSelected: this.props.isFrozen
+                tags: props.tags,
+                isSelected: props.isFrozen
                     ? false
-                    : this.props.selectedRegions.findIndex(
+                    : props.selectedRegions.findIndex(
                           (r) => r.id === region.id
                       ) >= 0,
-                appliedToSelectedRegions: this.props.isFrozen
+                appliedToSelectedRegions: props.isFrozen
                     ? false
-                    : !!this.props.selectedRegions,
-                isFrozen: this.props.isFrozen,
-                isLocked: this.props.isFrozen || isLocked,
+                    : !!props.selectedRegions,
+                isFrozen: props.isFrozen,
+                isLocked: props.isFrozen || isLocked,
                 isHided: isHided,
                 isFirst: isFirst,
                 isLast: isLast,
-                onClick: this.props.isFrozen
+                onClick: props.isFrozen
                     ? () => {}
-                    : this.props.onRegionClick,
-                onTagChange: this.props.isFrozen
+                    : props.onRegionClick,
+                onTagChange: props.isFrozen
                     ? () => {}
-                    : this.props.onTagChange,
-                onConfidenceChange: this.props.isFrozen
+                    : props.onTagChange,
+                onConfidenceChange: props.isFrozen
                     ? () => {}
-                    : this.props.onConfidenceChange,
-                onFirstAssetClick: this.props.onFirstAssetClick,
-                onPreviousAssetClick: this.props.onPreviousAssetClick,
-                onNextAssetClick: this.props.onNextAssetClick,
-                onLastAssetClick: this.props.onLastAssetClick,
-                onHideClick: this.props.onHideClick,
+                    : props.onConfidenceChange,
+                onFirstAssetClick: props.onFirstAssetClick,
+                onPreviousAssetClick: props.onPreviousAssetClick,
+                onNextAssetClick: props.onNextAssetClick,
+                onLastAssetClick: props.onLastAssetClick,
+                onHideClick: props.onHideClick,
                 onLockClick:
-                    this.props.isFrozen || isHided
+                    props.isFrozen || isHided
                         ? () => {}
-                        : this.props.onLockClick,
+                        : props.onLockClick,
                 onDeleteClick:
-                    this.props.isFrozen || isLocked || isHided
+                    props.isFrozen || isLocked || isHided
                         ? () => {}
-                        : this.props.onDeleteClick,
+                        : props.onDeleteClick,
                 onInterpolateClick:
-                    this.props.isFrozen || isLocked || isHided
+                    props.isFrozen || isLocked || isHided
                         ? () => {}
-                        : this.props.onInterpolateClick,
+                        : props.onInterpolateClick,
                 onIdClick:
-                    this.props.isFrozen || isLocked || isHided
+                    props.isFrozen || isLocked || isHided
                         ? () => {}
-                        : this.props.onIdClick,
+                        : props.onIdClick,
             }
-            return props
+            return regionProps
         })
     }
+
+    let regions = props.regions
+    if (props.selectedRegions.length > 0) {
+        if (props.selectedRegions[0].tags.length === 0) {
+            regions = [...regions, ...props.selectedRegions]
+        }
+    }
+    
+    return (
+        <div className="select-none bg-white/10 min-w-[250px] flex flex-grow flex-col">
+            {renderRegionList(regions)}
+        </div>
+    )
 }
+

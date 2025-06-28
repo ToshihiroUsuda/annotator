@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import { Button } from 'reactstrap'
 import MessageBox, { IMessageBoxProps } from '../messageBox'
 
@@ -10,7 +10,6 @@ export interface IAlertProps extends IMessageBoxProps {
 }
 
 const Alert: React.FC<IAlertProps> = (props) => {
-    const messageBox = useRef<MessageBox>(null)
 
     const onCloseClick = () => {
         if (props.onClose) {
@@ -20,7 +19,6 @@ const Alert: React.FC<IAlertProps> = (props) => {
 
     return (
         <MessageBox
-            ref={messageBox}
             title={props.title}
             message={props.message}
             show={props.show}

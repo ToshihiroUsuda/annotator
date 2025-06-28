@@ -5,7 +5,6 @@ import validator from "@rjsf/validator-ajv8";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { ITag } from "../../../models/applicationState";
 import { constants } from "../../../common/constants";
-import "./tagEditorModal.scss";
 
 const defaultValues = {
   tagColors: constants.tagColors,
@@ -132,7 +131,11 @@ const TagEditorModal: React.FC<ITagEditorModalProps> = (props) => {
 
   return (
     <div>
-      <Modal isOpen={isOpen} centered={true}>
+      <Modal
+        className="[&_.modal-content]:text-white"
+        isOpen={isOpen}
+        centered={true}
+      >
         <ModalHeader toggle={close} close={closeBtn}>
           Edit Tag
         </ModalHeader>
@@ -145,12 +148,7 @@ const TagEditorModal: React.FC<ITagEditorModalProps> = (props) => {
             onChange={handleFormChange}
             validator={validator}
           >
-            <button
-              style={{
-                display: "none",
-              }}
-              type="submit"
-            ></button>
+            <button className="hidden" type="submit"></button>
           </Form>
         </ModalBody>
         <ModalFooter>
@@ -167,157 +165,3 @@ const TagEditorModal: React.FC<ITagEditorModalProps> = (props) => {
 };
 
 export default TagEditorModal;
-// /**
-//  * State for Tag Editor Modal
-//  */
-// export interface ITagEditorModalState {
-//     /**  Tag originally opened with */
-//     originalTag: ITag
-//     /** Current tag as modified by modal */
-//     currentTag: ITag
-//     /** Modal is open */
-//     isOpen: boolean
-//     /** JSON form schema for modal body form */
-// }
-
-// export class TagEditorModal extends React.Component<
-//     ITagEditorModalProps,
-//     ITagEditorModalState
-// > {
-//     private createFormSchema: () => RJSFSchema = () => {
-//         const keys = Object.keys(defaultValues.tagColors)
-//         const values = Object.values(defaultValues.tagColors)
-//         return {
-//             type: 'object',
-//             properties: {
-//                 name: {
-//                     title: this.props.tagNameText || defaultValues.tagNameText,
-//                     type: 'string',
-//                 },
-//                 dispName: {
-//                     title:
-//                         this.props.dispNameText || defaultValues.dispNameText,
-//                     type: 'string',
-//                 },
-//                 color: {
-//                     title:
-//                         this.props.tagColorText || defaultValues.tagColorText,
-//                     type: 'string',
-//                     enum: values,
-//                     default: values[0],
-//                     enumNames: keys,
-//                 },
-//                 categories: {
-//                     title:
-//                         this.props.categoryNameText ||
-//                         defaultValues.categoryNameText,
-//                     type: 'array',
-//                     items: {
-//                         type: 'string',
-//                         enum: this.props.categories,
-//                         enumNames: this.props.categories,
-//                     },
-//                     uniqueItems: true,
-//                 },
-//             },
-//         }
-//     }
-
-//     public state: ITagEditorModalState = {
-//         originalTag: null,
-//         currentTag: null,
-//         isOpen: this.props.show,
-//     }
-
-//     public render() {
-//         const closeBtn = (
-//             <button className="close" onClick={this.close}>
-//                 &times;
-//             </button>
-//         )
-//         const formData = !this.state.currentTag
-//             ? null
-//             : {
-//                   name: this.state.currentTag.name,
-//                   dispName: this.state.currentTag.dispName,
-//                   color: this.state.currentTag.color,
-//                   categories: !this.state.currentTag.categories
-//                       ? []
-//                       : [...this.state.currentTag.categories],
-//               }
-//         const formSchema = this.createFormSchema()
-//         const uiSchema = { categories: { 'ui:widget': 'checkboxes' } }
-//         return (
-//             <div>
-//                 <Modal isOpen={this.state.isOpen} centered={true}>
-//                     <ModalHeader toggle={this.close} close={closeBtn}>
-//                         {this.props.editTagText || defaultValues.editTagText}
-//                     </ModalHeader>
-//                     <ModalBody>
-//                         <Form
-//                             idPrefix={'modal-form'}
-//                             schema={formSchema}
-//                             uiSchema={uiSchema}
-//                             formData={formData}
-//                             onChange={this.handleFormChange}
-//                             validator={validator}
-//                         >
-//                             <button
-//                                 style={{
-//                                     display: 'none',
-//                                 }}
-//                                 type="submit"
-//                             ></button>
-//                         </Form>
-//                     </ModalBody>
-//                     <ModalFooter>
-//                         <Button color="success" onClick={this.handleOk}>
-//                             {this.props.saveText || defaultValues.saveText}
-//                         </Button>
-//                         <Button color="secondary" onClick={this.close}>
-//                             {this.props.cancelText || defaultValues.cancelText}
-//                         </Button>
-//                     </ModalFooter>
-//                 </Modal>
-//             </div>
-//         )
-//     }
-
-//     public open = (tag: ITag): void => {
-//         this.setState({
-//             isOpen: true,
-//             originalTag: tag,
-//             currentTag: tag,
-//         })
-//     }
-
-//     public close = (): void => {
-//         this.setState(
-//             {
-//                 isOpen: false,
-//             },
-//             () => {
-//                 if (this.props.onCancel) {
-//                     this.props.onCancel()
-//                 }
-//             }
-//         )
-//     }
-
-//     private handleFormChange = (args): void => {
-//         this.setState({
-//             currentTag: {
-//                 name: args.formData.name,
-//                 dispName: args.formData.dispName,
-//                 color: args.formData.color,
-//                 categories: !args.formData.categories
-//                     ? []
-//                     : [...args.formData.categories],
-//             },
-//         })
-//     }
-
-//     private handleOk = (e): void => {
-//         this.props.onOk(this.state.originalTag, this.state.currentTag)
-//     }
-// }

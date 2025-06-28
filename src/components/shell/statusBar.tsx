@@ -1,19 +1,15 @@
-import React from 'react'
-import { appInfo } from '../../common/appInfo'
-import './statusBar.scss'
+import React from "react";
+import { FaCodeBranch } from "react-icons/fa";
+import { appInfo } from "../../common/appInfo";
 
 export const StatusBar: React.FC<React.PropsWithChildren> = ({ children }) => {
-    return (
-        <div className="status-bar">
-            <div className="status-bar-main">{children}</div>
-            <div className="status-bar-version">
-                <ul>
-                    <li>
-                        <i className="fas fa-code-branch"></i>
-                        <span>{appInfo.version}</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    )
-}
+  return (
+    <div className="text-xs text-white flex items-center h-6 flex-row py-1 px-3 bg-blue-500/10">
+      <div className="flex-grow">{children}</div>
+      <div className="flex">
+        <FaCodeBranch />
+        <div>{appInfo.version}</div>
+      </div>
+    </div>
+  );
+};

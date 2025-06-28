@@ -1,12 +1,5 @@
 import path from "path-browserify";
-import React, {
-  useRef,
-  useState,
-  useEffect,
-  useCallback,
-  useImperativeHandle,
-} from "react";
-import ReactDOMClient from "react-dom/client";
+import React, { useRef, useState, useEffect, useImperativeHandle } from "react";
 import { strings } from "../../../../common/strings";
 import { encodeFileURI } from "../../../../common/utils";
 import {
@@ -22,7 +15,6 @@ import { AssetService } from "../../../../services/assetService";
 import { IAssetProps } from "..";
 import ControlBar from "./controlBar";
 import AssetStateSelector from "./assetStateSelector";
-import "./videoAsset.scss";
 
 export type VideoState = {
   readyState: number;
@@ -156,7 +148,7 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
         // データ取得に失敗したとき
         updateReadyState();
       };
-      const handleError = (e: any) => {
+      const handleError = () => {
         updateReadyState();
         throw new AppError(
           ErrorCode.VideoLoadError,
@@ -254,157 +246,137 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
     }, [asset.name, videoState]);
 
     // タイムスタンプの正規化
-    const getValidTimestamp = useCallback(
-      (timestamp: number) => {
-        const frameSkipTime = 1 / appSettings.frameExtractionRate;
-        const numberKeyFrames = Math.round(timestamp / frameSkipTime);
-        return +(numberKeyFrames * frameSkipTime).toFixed(6);
-      },
-      [appSettings.frameExtractionRate]
-    );
+    const getValidTimestamp = (timestamp: number) => {
+      const frameSkipTime = 1 / appSettings.frameExtractionRate;
+      const numberKeyFrames = Math.round(timestamp / frameSkipTime);
+      return +(numberKeyFrames * frameSkipTime).toFixed(6);
+    };
 
     // タグ判定
-    const checkTagged = useCallback(
-      (visibleState: AssetState[], asset: IAsset) => {
-        const hasStep =
-          asset.step &&
-          !(
-            asset.state === AssetState.Tracked ||
-            asset.state === AssetState.Interpolated
-          );
-        const hasComment = !!asset.comment;
-        const hasPolygon = asset.polygonNumber
-          ? asset.polygonNumber > 0
-          : false;
-        const hasPolyline = asset.polylineNumber
-          ? asset.polylineNumber > 0
-          : false;
-        const hasPoly = visibleStatePolyInput && (hasPolygon || hasPolyline);
-        return (
-          visibleState.indexOf(asset.state) >= 0 ||
-          hasComment ||
-          hasStep ||
-          hasPoly
+    const checkTagged = (visibleState: AssetState[], asset: IAsset) => {
+      const hasStep =
+        asset.step &&
+        !(
+          asset.state === AssetState.Tracked ||
+          asset.state === AssetState.Interpolated
         );
-      },
-      [visibleStatePolyInput]
-    );
+      const hasComment = !!asset.comment;
+      const hasPolygon = asset.polygonNumber
+        ? asset.polygonNumber > 0
+        : false;
+      const hasPolyline = asset.polylineNumber
+        ? asset.polylineNumber > 0
+        : false;
+      const hasPoly = visibleStatePolyInput && (hasPolygon || hasPolyline);
+      return (
+        visibleState.indexOf(asset.state) >= 0 ||
+        hasComment ||
+        hasStep ||
+        hasPoly
+      );
+    };
 
     // 隣接タグフレーム探索
-    const findAdjacentTaggedTimestamp = useCallback(
-      (
-        visibleState: AssetState[] | undefined,
-        direction: "next" | "previous"
-      ) => {
-        if (!videoRef.current) return null;
-        if (!visibleState || visibleState.length === 0) return null;
-        const sign = direction === "next" ? 1 : -1;
-        const currentTime = videoRef.current.currentTime;
-        const frameSkipTime = 1 / appSettings.frameExtractionRate;
-        const eps = frameSkipTime / 10;
-        let adjacentTaggedTimestamp = null;
-        let minDiff = Infinity;
-        for (const asset of childAssets || []) {
-          if (asset.timestamp === undefined) continue;
-          if (!checkTagged(visibleState, asset)) continue;
-          const diff = sign * (asset.timestamp - currentTime);
-          if (diff < eps) continue;
-          if (diff < minDiff) {
-            minDiff = diff;
-            adjacentTaggedTimestamp = asset.timestamp;
-          }
+    const findAdjacentTaggedTimestamp = (
+      visibleState: AssetState[] | undefined,
+      direction: "next" | "previous"
+    ) => {
+      if (!videoRef.current) return null;
+      if (!visibleState || visibleState.length === 0) return null;
+      const sign = direction === "next" ? 1 : -1;
+      const currentTime = videoRef.current.currentTime;
+      const frameSkipTime = 1 / appSettings.frameExtractionRate;
+      const eps = frameSkipTime / 10;
+      let adjacentTaggedTimestamp = null;
+      let minDiff = Infinity;
+      for (const asset of childAssets || []) {
+        if (asset.timestamp === undefined) continue;
+        if (!checkTagged(visibleState, asset)) continue;
+        const diff = sign * (asset.timestamp - currentTime);
+        if (diff < eps) continue;
+        if (diff < minDiff) {
+          minDiff = diff;
+          adjacentTaggedTimestamp = asset.timestamp;
         }
-        return adjacentTaggedTimestamp;
-      },
-      [appSettings.frameExtractionRate, childAssets, checkTagged]
-    );
+      }
+      return adjacentTaggedTimestamp;
+    };
 
     // 各種移動関数
-    const seekToTime = useCallback(
-      (time: number, beTracked: boolean = false) => {
-        if (!videoRef.current) return;
-        const seekTime = getValidTimestamp(time);
-        if (seekTime >= 0) {
-          if (onBeforeAssetChanged && !onBeforeAssetChanged()) return;
+    const seekToTime = (time: number, beTracked: boolean = false) => {
+      if (!videoRef.current) return;
+      const seekTime = getValidTimestamp(time);
+      if (seekTime >= 0) {
+        if (onBeforeAssetChanged && !onBeforeAssetChanged()) return;
 
-          if (onTrack) onTrack(beTracked);
+        if (onTrack) onTrack(beTracked);
 
-          if (videoRef.current) {
-            videoRef.current.pause();
-            videoRef.current.currentTime = seekTime;
-          }
+        if (videoRef.current) {
+          videoRef.current.pause();
+          videoRef.current.currentTime = seekTime;
         }
-      },
-      [getValidTimestamp, onBeforeAssetChanged, onTrack]
-    );
+      }
+    };
 
-    const movePreviousTaggedFrame = useCallback(() => {
+    const movePreviousTaggedFrame = () => {
       const previousTimestamp = findAdjacentTaggedTimestamp(
         visibleStates,
         "previous"
       );
       if (previousTimestamp) seekToTime(previousTimestamp);
-    }, [findAdjacentTaggedTimestamp, seekToTime, visibleStates]);
+    };
 
-    const moveNextTaggedFrame = useCallback(() => {
+    const moveNextTaggedFrame = () => {
       const nextTimeStamp = findAdjacentTaggedTimestamp(visibleStates, "next");
       if (nextTimeStamp) seekToTime(nextTimeStamp);
-    }, [findAdjacentTaggedTimestamp, seekToTime, visibleStates]);
+    };
 
-    const moveNextExpectedFrame = useCallback(() => {
+    const moveNextExpectedFrame = () => {
       if (!videoRef.current) return;
       const currentTime = videoRef.current.currentTime;
       const frameSkipTime = 1 / appSettings.frameExtractionRate;
       seekToTime(currentTime + frameSkipTime);
-    }, [appSettings.frameExtractionRate, seekToTime]);
+    };
 
-    const movePreviousExpectedFrame = useCallback(() => {
+    const movePreviousExpectedFrame = () => {
       if (!videoRef.current) return;
       const currentTime = videoRef.current.currentTime;
       const frameSkipTime = 1 / appSettings.frameExtractionRate;
       seekToTime(currentTime - frameSkipTime);
-    }, [appSettings.frameExtractionRate, seekToTime]);
+    };
 
-    const moveFrame = useCallback(
-      (numFrames: number) => {
-        if (!videoRef.current) return;
-        const currentTime = videoRef.current.currentTime;
-        const frameSkipTime = 1 / appSettings.frameExtractionRate;
-        let seekTimestamp: number = currentTime + frameSkipTime;
-        const visibleStateWithTracked = [
-          ...(visibleStates || []),
-          AssetState.Tracked,
-        ];
-        if (numFrames > 0) {
-          const nextTimestamp = findAdjacentTaggedTimestamp(
-            visibleStateWithTracked,
-            "next"
-          );
-          if (nextTimestamp !== null && seekTimestamp > nextTimestamp) {
-            seekTimestamp = nextTimestamp;
-          }
-        } else {
-          const previousTimestamp = findAdjacentTaggedTimestamp(
-            visibleStateWithTracked,
-            "previous"
-          );
-          if (previousTimestamp !== null && seekTimestamp < previousTimestamp) {
-            seekTimestamp = previousTimestamp;
-          }
+    const moveFrame = (numFrames: number) => {
+      if (!videoRef.current) return;
+      const currentTime = videoRef.current.currentTime;
+      const frameSkipTime = 1 / appSettings.frameExtractionRate;
+      let seekTimestamp: number = currentTime + frameSkipTime;
+      const visibleStateWithTracked = [
+        ...(visibleStates || []),
+        AssetState.Tracked,
+      ];
+      if (numFrames > 0) {
+        const nextTimestamp = findAdjacentTaggedTimestamp(
+          visibleStateWithTracked,
+          "next"
+        );
+        if (nextTimestamp !== null && seekTimestamp > nextTimestamp) {
+          seekTimestamp = nextTimestamp;
         }
-        const beTracked = Math.abs(numFrames) === 5;
-        seekToTime(seekTimestamp, beTracked);
-      },
-      [
-        appSettings.frameExtractionRate,
-        visibleStates,
-        findAdjacentTaggedTimestamp,
-        seekToTime,
-      ]
-    );
+      } else {
+        const previousTimestamp = findAdjacentTaggedTimestamp(
+          visibleStateWithTracked,
+          "previous"
+        );
+        if (previousTimestamp !== null && seekTimestamp < previousTimestamp) {
+          seekTimestamp = previousTimestamp;
+        }
+      }
+      const beTracked = Math.abs(numFrames) === 5;
+      seekToTime(seekTimestamp, beTracked);
+    };
 
     // キーフレーム判定
-    const isValidKeyFrame = useCallback((): boolean => {
+    const isValidKeyFrame = (): boolean => {
       if (!videoRef.current) return false;
       const timestamp = videoRef.current.currentTime;
       const seekTime = getValidTimestamp(timestamp);
@@ -413,7 +385,7 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
         seekToTime(seekTime);
       }
       return isSameTime;
-    }, [getValidTimestamp, seekToTime]);
+    };
 
     // タイムライン描画
     // const renderChildAssetMarker = useCallback(
@@ -545,6 +517,7 @@ export const VideoAsset = React.forwardRef<IVideoAssetRef, IVideoAssetProps>(
           autoPlay={isForCanvas}
           src={videoPath}
           crossOrigin="anonymous"
+          className="static w-full h-full"
         />
         {isForCanvas && loaded && (
           <ControlBar

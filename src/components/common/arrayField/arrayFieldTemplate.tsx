@@ -1,5 +1,6 @@
 import React from 'react'
 import { ArrayFieldTemplateProps } from '@rjsf/utils'
+import { FaPlusCircle, FaTrash } from 'react-icons/fa'
 import { strings } from '../../../common/strings'
 
 const ArrayFieldTemplate: React.FC<ArrayFieldTemplateProps> = (
@@ -14,7 +15,7 @@ const ArrayFieldTemplate: React.FC<ArrayFieldTemplateProps> = (
                         className="btn btn-info"
                         onClick={props.onAddClick}
                     >
-                        <i className="fas fa-plus-circle"></i>
+                        <FaPlusCircle />
                         <span className="ml-1">Add {props.schema.title}</span>
                     </button>
                 </div>
@@ -30,7 +31,7 @@ const ArrayFieldTemplate: React.FC<ArrayFieldTemplateProps> = (
                                     className="btn btn-sm btn-danger"
                                     onClick={item.onDropIndexClick(item.index)}
                                 >
-                                    <i className="fas fa-trash"></i>
+                                    <FaTrash />
                                     <span className="ml-1">
                                         {strings.common.delete}
                                     </span>

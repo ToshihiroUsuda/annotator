@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { FaFolderPlus, FaTrash } from "react-icons/fa";
 import localForage from "localforage";
 import _ from "lodash";
 import path from "path-browserify";
@@ -19,7 +20,6 @@ import Confirm from "../../common/confirm";
 import { ProgressCircle } from "../../common/progressCircle";
 import PropsWithNavigate from "../navigate";
 import ProjectList from "./projectList";
-import "./projectListpage.scss";
 
 export interface IProjectListPageProps extends PropsWithNavigate {
   recentProjects: IProject[];
@@ -28,98 +28,44 @@ export interface IProjectListPageProps extends PropsWithNavigate {
   appSettings: IAppSettings;
 }
 
-export interface IProjectListPageState {
-  isProgressCircleActive: boolean;
-  progressValue: number;
-  shownModal: "none" | "importConfirm" | "clearAllConfirm";
-}
+const ProjectListPage: React.FC<IProjectListPageProps> = (props) => {
+  const [isProgressCircleActive, setIsProgressCircleActive] = useState(false);
+  const [progressValue, setProgressValue] = useState(0);
+  const [shownModal, setShownModal] = useState<"none" | "importConfirm" | "clearAllConfirm">("none");
 
-export default class ProjectListPage extends React.Component<
-  IProjectListPageProps,
-  IProjectListPageState
-> {
-  public state: IProjectListPageState = {
-    isProgressCircleActive: false,
-    progressValue: 0,
-    shownModal: "none",
-  };
+  useEffect(() => {
+    const initializeComponent = async () => {
+      const editorState = (await localForage.getItem(
+        "editorState"
+      )) as IEditorState;
+      if (editorState) {
+        saveAll(editorState);
+      }
+    };
+    initializeComponent();
+  }, []);
 
-  public componentDidMount = async () => {
-    const editorState = (await localForage.getItem(
-      "editorState"
-    )) as IEditorState;
-    if (editorState) {
-      this.saveAll(editorState);
-    }
-  };
-
-  public render() {
-    return (
-      <div className="app-homepage">
-        {this.state.isProgressCircleActive && (
-          <ProgressCircle value={this.state.progressValue} />
-        )}
-        <div className="app-homepage-toolbar">
-          <div className="app-homepage-toolbar-buttons">
-            <ToolbarButton
-              icon="fa-folder-plus"
-              onClick={() => {
-                this.setState({ shownModal: "importConfirm" });
-              }}
-            />
-            <ToolbarButton
-              icon="fa-trash"
-              onClick={() => {
-                this.setState({ shownModal: "clearAllConfirm" });
-              }}
-            />
-          </div>
-        </div>
-        <div className="app-homepage-list">{this.makeProjctsLists()}</div>
-        <Confirm
-          show={this.state.shownModal === "clearAllConfirm"}
-          title="Clear All Projects"
-          message={() => `${strings.homePage.clearProject.confirmation}?`}
-          confirmButtonColor="danger"
-          onConfirm={this.clearAllProjects}
-        />
-        <Confirm
-          show={this.state.shownModal === "importConfirm"}
-          title="Import Projects"
-          message={
-            strings.homePage.importProject.confirmation +
-            " " +
-            this.props.appSettings.rootDirectory +
-            "?"
-          }
-          confirmButtonColor="danger"
-          onConfirm={this.importProjects}
-        />
-      </div>
-    );
-  }
-
-  private makeProjctsLists = () => {
+  const makeProjctsLists = () => {
     const recentProjectsItems = [
       {
         name: "Current Project",
-        projects: this.props.currentProject ? [this.props.currentProject] : [],
+        projects: props.currentProject ? [props.currentProject] : [],
       },
       {
         name: "Working Projects",
-        projects: this.props.recentProjects.filter(
+        projects: props.recentProjects.filter(
           (project) => project.phase === ProjectPhase.Working
         ),
       },
       {
         name: "Waiting Projects",
-        projects: this.props.recentProjects.filter(
+        projects: props.recentProjects.filter(
           (project) => project.phase === ProjectPhase.Waiting
         ),
       },
       {
         name: "Completed Projects",
-        projects: this.props.recentProjects.filter(
+        projects: props.recentProjects.filter(
           (project) => project.phase === ProjectPhase.Completed
         ),
       },
@@ -127,59 +73,48 @@ export default class ProjectListPage extends React.Component<
     return (
       <ProjectList
         projectsListItems={recentProjectsItems}
-        onClick={this.loadSelectedProject}
+        onClick={loadSelectedProject}
       />
     );
   };
 
-  private importProjects = async () => {
-    // this.props.actions.closeProject();
-    this.setState({ shownModal: "none" });
+  const importProjects = async () => {
+    setShownModal("none");
 
-    if (this.state.isProgressCircleActive) {
+    if (isProgressCircleActive) {
       return;
     }
     const folderPaths = await LocalFileSystem.listDirectories(
-      this.props.appSettings.rootDirectory
+      props.appSettings.rootDirectory
     );
     const numOfProject = folderPaths.length;
-    this.setState({ isProgressCircleActive: true, progressValue: 0 });
-    // for (const folderPath of folderPaths) {
-    //     const projectName = path.basename(normalizeSlashes(folderPath))
-    //     await this.props.actions.createOrLoadProject(projectName)
-    //     index += 1
-    //     this.setState({ progressValue: (100 * index) / numOfProject })
-    // }
+    setIsProgressCircleActive(true);
+    setProgressValue(0);
 
     await Promise.all(
       folderPaths.map(async (folderPath) => {
         const projectName = path.basename(normalizeSlashes(folderPath));
-        await this.props.actions.createOrLoadProject(projectName);
-        this.setState((prevState) => ({
-          progressValue: prevState.progressValue + 100 / numOfProject,
-        }));
+        await props.actions.createOrLoadProject(projectName);
+        setProgressValue((prevValue) => prevValue + 100 / numOfProject);
       })
     );
-    // this.props.actions.closeProject();
-    // toast.success(interpolate(strings.projectSettings.messages.saveSuccess, { project }))
-    this.setState({
-      isProgressCircleActive: false,
-      progressValue: 0,
-    });
+
+    setIsProgressCircleActive(false);
+    setProgressValue(0);
   };
 
-  private loadSelectedProject = async (project: IProject) => {
-    await this.props.actions.loadProject(project);
-    this.props.navigate(`/projects/${project.id}`);
+  const loadSelectedProject = async (project: IProject) => {
+    await props.actions.loadProject(project);
+    props.navigate(`/projects/${project.id}`);
   };
 
-  private clearAllProjects = () => {
-    this.props.actions.closeProject();
-    this.props.actions.clearAllProjects();
-    this.setState({ shownModal: "none" });
+  const clearAllProjects = () => {
+    props.actions.closeProject();
+    props.actions.clearAllProjects();
+    setShownModal("none");
   };
 
-  private saveAll = async (editorState: IEditorState) => {
+  const saveAll = async (editorState: IEditorState) => {
     let rootDirectory: string | null = editorState.rootDirectory;
     const project = editorState.project;
     const assetMetadataList = editorState.assetMetadataList;
@@ -203,9 +138,9 @@ export default class ProjectListPage extends React.Component<
         await LocalFileSystem.createDirectory(assetPath);
       }
       const numOfFile = 3 + _.keys(modifiedAssetList).length;
-      this.setState({ isProgressCircleActive: true });
+      setIsProgressCircleActive(true);
       let index = 0;
-      this.setState({ progressValue: (100 * index) / numOfFile });
+      setProgressValue((100 * index) / numOfFile);
       const assetFilePath = [
         assetPath,
         `${project.name}${constants.assetMetadataListFileExtension}`,
@@ -215,7 +150,7 @@ export default class ProjectListPage extends React.Component<
         JSON.stringify(assetMetadataList)
       );
       index += 1;
-      this.setState({ progressValue: (100 * index) / numOfFile });
+      setProgressValue((100 * index) / numOfFile);
       const regionFilePath = [
         assetPath,
         `${project.name}${constants.regionMetadataListFileExtension}`,
@@ -225,13 +160,13 @@ export default class ProjectListPage extends React.Component<
         JSON.stringify(regionMetadataList)
       );
       index += 1;
-      this.setState({ progressValue: (100 * index) / numOfFile });
+      setProgressValue((100 * index) / numOfFile);
       const updatedAssets = { ...project.assets };
       await _.values(modifiedAssetList).forEachAsync(
         async (assetMetadata: IAssetMetadata) => {
           index += 1;
-          this.setState({ progressValue: (100 * index) / numOfFile });
-          await this.props.actions.saveAssetMetadata(project, assetMetadata);
+          setProgressValue((100 * index) / numOfFile);
+          await props.actions.saveAssetMetadata(project, assetMetadata);
           if (
             assetMetadata.asset.state === AssetState.Sample ||
             assetMetadata.asset.state === AssetState.Store ||
@@ -247,22 +182,72 @@ export default class ProjectListPage extends React.Component<
           }
         }
       );
-      await this.props.actions.saveProject({
+      await props.actions.saveProject({
         ...project,
         assets: updatedAssets,
       });
-      this.setState({ progressValue: 0, isProgressCircleActive: false });
+      setProgressValue(0);
+      setIsProgressCircleActive(false);
       localForage.removeItem("editorState");
     }
   };
-}
 
-const ToolbarButton: React.FC<{ icon: string; onClick: () => void }> = (
+  return (
+    <div className="flex flex-col min-h-full relative">
+      {isProgressCircleActive && (
+        <ProgressCircle value={progressValue} />
+      )}
+      <div className="h-14 bg-black/10 border-b border-white/10">
+        <div className="flex flex-row items-center justify-center">
+          <ToolbarButton
+            icon={FaFolderPlus}
+            onClick={() => {
+              setShownModal("importConfirm");
+            }}
+          />
+          <ToolbarButton
+            icon={FaTrash}
+            onClick={() => {
+              setShownModal("clearAllConfirm");
+            }}
+          />
+        </div>
+      </div>
+      <div className="flex flex-grow flex-row">{makeProjctsLists()}</div>
+      <Confirm
+        show={shownModal === "clearAllConfirm"}
+        title="Clear All Projects"
+        message={() => `${strings.homePage.clearProject.confirmation}?`}
+        confirmButtonColor="danger"
+        onConfirm={clearAllProjects}
+      />
+      <Confirm
+        show={shownModal === "importConfirm"}
+        title="Import Projects"
+        message={
+          strings.homePage.importProject.confirmation +
+          " " +
+          props.appSettings.rootDirectory +
+          "?"
+        }
+        confirmButtonColor="danger"
+        onConfirm={importProjects}
+      />
+    </div>
+  );
+};
+
+export default ProjectListPage;
+
+const ToolbarButton: React.FC<{ icon: React.ComponentType; onClick: () => void }> = (
   props
 ) => (
-  <div className="toolbar-btn" onClick={props.onClick}>
-    <a>
-      <i className={`fas ${props.icon}`}></i>
-    </a>
+  <div
+    className="w-14 h-14 outline-none flex flex-row bg-transparent border-none text-gray-300 list-none items-center cursor-pointer hover:bg-white/10 hover:border hover:border-white/15 active:bg-black/10"
+    onClick={props.onClick}
+  >
+    <span className="inline-flex m-auto">
+      {React.createElement(props.icon, { style: { fontSize: '24px' } })}
+    </span>
   </div>
 );

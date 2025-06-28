@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { IRegion, ITag } from '../../../models/applicationState'
-import './tagInput.scss'
 import TagInputItem, { ITagInputItemProps } from './tagInputItem'
 
 export interface ITagInputProps {
@@ -22,77 +21,53 @@ export interface ITagInputState {
     clickedColor: boolean
 }
 
-export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
-    public state: ITagInputState = {
-        tags: this.props.tags || [],
-        clickedColor: false,
-    }
+export const TagInput: React.FC<ITagInputProps> = (props) => {
+    const [tags, setTags] = useState(props.tags || [])
+    const [clickedColor, setClickedColor] = useState(false)
 
-    private tagItemRefs: Map<string, HTMLDivElement> = new Map<
-        string,
-        HTMLDivElement
-    >()
+    const tagItemRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
-    public render() {
-        // TODO
-        return (
-            <div className="tag-input condensed-list">
-                <div className="tag-input-body">
-                    <div className={`taglist`}>
-                        <div className="condensed-list-body">
-                            <div className="tag-input-items">
-                                {this.renderTagItems(this.state.tags)}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    public componentDidUpdate(prevProps: ITagInputProps) {
-        if (prevProps.tags !== this.props.tags) {
-            this.setState({
-                tags: this.props.tags,
-            })
+    useEffect(() => {
+        if (props.tags !== tags) {
+            setTags(props.tags)
         }
-    }
+    }, [props.tags])
 
-    private renderTagItems = (tags: ITag[]) => {
-        const propsList = this.createTagItemPropsList(tags)
-        this.tagItemRefs.clear()
+    const renderTagItems = (tags: ITag[]) => {
+        const propsList = createTagItemPropsList(tags)
+        tagItemRefs.current.clear()
 
-        return propsList.map((props) => (
-            <TagInputItem key={props.tag.name} {...props} />
+        return propsList.map((tagProps) => (
+            <TagInputItem key={tagProps.tag.name} {...tagProps} />
         ))
     }
 
-    private setTagItemRef = (item: HTMLDivElement | null, tag: ITag): void => {
+    const setTagItemRef = (item: HTMLDivElement | null, tag: ITag): void => {
         if (item) {
-            this.tagItemRefs.set(tag.name, item)
+            tagItemRefs.current.set(tag.name, item)
         }
     }
 
-    private createTagItemPropsList = (tags: ITag[]): ITagInputItemProps[] => {
-        const selectedRegionTagSet = this.getSelectedRegionTagSet()
+    const createTagItemPropsList = (tags: ITag[]): ITagInputItemProps[] => {
+        const selectedRegionTagSet = getSelectedRegionTagSet()
 
         return tags.map((tag, index) => ({
             tag,
             index,
             isSelected:
-                this.props.isLocked || this.props.selectedTag === tag.name,
+                props.isLocked || props.selectedTag === tag.name,
             appliedToSelectedRegions:
-                this.props.isLocked || selectedRegionTagSet.has(tag.name),
-            isLocked: this.props.isLocked,
-            onTagClick: this.props.isLocked ? () => {} : this.handleClick,
-            ref: (item) => this.setTagItemRef(item, tag),
+                props.isLocked || selectedRegionTagSet.has(tag.name),
+            isLocked: props.isLocked,
+            onTagClick: props.isLocked ? () => {} : handleClick,
+            ref: (item) => setTagItemRef(item, tag),
         }))
     }
 
-    private getSelectedRegionTagSet = (): Set<string> => {
+    const getSelectedRegionTagSet = (): Set<string> => {
         const result = new Set<string>()
-        if (this.props.selectedRegions) {
-            for (const region of this.props.selectedRegions) {
+        if (props.selectedRegions) {
+            for (const region of props.selectedRegions) {
                 for (const tag of region.tags) {
                     result.add(tag)
                 }
@@ -101,7 +76,23 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         return result
     }
 
-    private handleClick = (tag: ITag) => {
-        this.props.onTagClick?.(tag)
+    const handleClick = (tag: ITag) => {
+        props.onTagClick?.(tag)
     }
+
+    // TODO
+    return (
+        <div className="h-full flex select-none bg-white/10 min-w-[250px]">
+            <div className="flex-grow overflow-x-hidden overflow-y-auto">
+                <div className={`taglist`}>
+                    <div className="flex-grow flex overflow-auto flex-col relative">
+                        <div className="tag-input-items">
+                            {renderTagItems(tags)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
 }
+

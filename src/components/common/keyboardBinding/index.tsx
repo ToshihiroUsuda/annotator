@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import {
     IKeyboardContext,
     KeyboardContext,
@@ -21,30 +21,27 @@ export interface IKeyboardBindingProps {
     icon?: string
 }
 
-export class KeyboardBinding extends React.Component<IKeyboardBindingProps> {
-    public static contextType = KeyboardContext
-    declare public context: IKeyboardContext
-    private deregisterBinding: (() => void) | undefined
+export const KeyboardBinding: React.FC<IKeyboardBindingProps> = (props) => {
+    const context = useContext(KeyboardContext)
+    const deregisterBinding = useRef<(() => void) | undefined>()
 
-    public componentDidMount() {
-        if (this.context && this.context.keyboard) {
-            this.deregisterBinding = this.context.keyboard.registerBinding(
-                this.props
+    useEffect(() => {
+        if (context?.keyboard) {
+            deregisterBinding.current = context.keyboard.registerBinding(
+                props
             )
         } else {
             console.warn(
                 'Keyboard Mananger context cannot be found - Keyboard binding has NOT been set.'
             )
         }
-    }
 
-    public componentWillUnmount() {
-        if (this.deregisterBinding) {
-            this.deregisterBinding()
+        return () => {
+            if (typeof deregisterBinding.current === 'function') {
+                deregisterBinding.current()
+            }
         }
-    }
+    }, [context, props])
 
-    public render() {
-        return null
-    }
+    return null
 }

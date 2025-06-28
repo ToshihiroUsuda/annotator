@@ -29,40 +29,37 @@ const TagInputItem: React.FC<ITagInputItemProps> = ({ ref, ...props }) => {
     }
 
     const getItemClassName = () => {
-        const classNames = ['tag-item']
+        const classNames = ['flex flex-row']
         if (props.isSelected) {
-            classNames.push('tag-item-selected')
+            classNames.push('[&_.tag-content-unlocked]:text-white [&_.tag-content-unlocked]:mx-0.5 [&_.tag-content-unlocked]:my-0 [&_.tag-content-unlocked]:mr-0 [&_.tag-content-unlocked]:!bg-black/40')
         }
         if (props.appliedToSelectedRegions) {
-            classNames.push('tag-item-applied')
-        }
-        if (props.isLocked) {
-            classNames.push('tag-item-locked')
+            classNames.push('[&_.tag-content-unlocked]:text-white [&_.tag-content-unlocked]:font-semibold [&_.tag-content-unlocked]:!bg-black/40')
         }
         return classNames.join(' ')
     }
 
     return (
-        <div className={'tag-item-block'} ref={ref}>
+        <div className={'my-0.5'} ref={ref}>
             {props.tag && (
                 <li
                     className={getItemClassName()}
                     style={{ background: props.tag.color }}
                 >
-                    <div className={`tag-color`}></div>
+                    <div className={`w-3`}></div>
                     <div
                         className={
                             props.isLocked
-                                ? 'tag-content-locked'
-                                : 'tag-content-unlocked'
+                                ? 'flex-1 bg-black/60 cursor-default'
+                                : 'flex-1 bg-black/60 hover:bg-black/32 cursor-pointer tag-content-unlocked'
                         }
                         onClick={onNameClick}
                     >
-                        <div className="tag-name-container">
-                            <div className="tag-name-body">
+                        <div className="flex flex-row min-h-[1.8rem] items-center">
+                            <div className="flex-grow">
                                 <span
                                     title={props.tag.title || props.tag.name}
-                                    className={'tag-name-text px-2'}
+                                    className={'max-w-[195px] block text-ellipsis overflow-hidden whitespace-nowrap px-2'}
                                 >
                                     {props.tag.dispName || props.tag.name}
                                 </span>

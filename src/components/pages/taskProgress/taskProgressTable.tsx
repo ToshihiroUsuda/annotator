@@ -1,9 +1,23 @@
 import _ from 'lodash'
 import React, { MouseEvent, useEffect, useState } from 'react'
 import { AutoSizer, Column, Table } from 'react-virtualized'
-import './taskProgressPage.scss'
-
 import moment from 'moment'
+import { 
+    FaFolderOpen, 
+    FaCalendar, 
+    FaClock, 
+    FaDownload, 
+    FaClipboardList, 
+    FaEdit, 
+    FaShieldAlt, 
+    FaUpload, 
+    FaUser, 
+    FaFileAlt,
+    FaCircle,
+    FaCircleNotch,
+    FaCheckCircle,
+    FaExclamationTriangle
+} from 'react-icons/fa'
 import { convertDateFormat } from '../../../common/utils'
 import {
     IProject,
@@ -14,7 +28,6 @@ import {
 import { IProjectActions } from '../../../atom/actions/project'
 import { IReportActions } from '../../../atom/actions/report'
 import { TextInputWithOptions } from '../../common/textInputWithOptions'
-import './taskProgressTable.scss'
 
 const STATUS = ['yet', 'doing', 'done', 'error', 'disabled'] as const
 type TStatus = (typeof STATUS)[number]
@@ -194,9 +207,9 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                             return getRow(caseNames[index])
                         }}
                         rowCount={caseNames.length}
-                        headerClassName="task-progress-table-header"
-                        rowClassName="task-progress-table-row"
-                        gridClassName="task-progress-table-body"
+                        headerClassName=""
+                        rowClassName="flex flex-row bg-white/5 hover:bg-white/10"
+                        gridClassName="outline-none"
                     >
                         {props.showColumnList.includes('case') && (
                             <Column
@@ -205,7 +218,7 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                 headerRenderer={() => (
                                     <HeaderCell
                                         name="case"
-                                        icon="fas fa-folder-open"
+                                        icon={FaFolderOpen}
                                     />
                                 )}
                                 cellRenderer={({ cellData }) => (
@@ -220,7 +233,7 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                 headerRenderer={() => (
                                     <HeaderCell
                                         name="date"
-                                        icon="fas fa-calendar"
+                                        icon={FaCalendar}
                                     />
                                 )}
                                 cellRenderer={({ cellData }) => (
@@ -238,7 +251,7 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                 headerRenderer={() => (
                                     <HeaderCell
                                         name="time"
-                                        icon="fas fa-clock"
+                                        icon={FaClock}
                                     />
                                 )}
                                 cellRenderer={({ cellData }) => (
@@ -253,7 +266,7 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                 headerRenderer={() => (
                                     <HeaderCell
                                         name="load"
-                                        icon="fas fa-download"
+                                        icon={FaDownload}
                                     />
                                 )}
                                 cellRenderer={({ rowData, cellData }) => {
@@ -263,9 +276,9 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                             cellData={cellData}
                                             prevTasks={[]}
                                             icons={{
-                                                yet: 'fas fa-circle',
-                                                doing: 'fas fa-circle-notch fa-spin',
-                                                done: 'fas fa-check-circle',
+                                                yet: FaCircle,
+                                                doing: () => <FaCircleNotch className="fa-spin" />,
+                                                done: FaCheckCircle,
                                             }}
                                         />
                                     )
@@ -279,7 +292,7 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                 headerRenderer={() => (
                                     <HeaderCell
                                         name="report"
-                                        icon="fas fa-clipboard-list"
+                                        icon={FaClipboardList}
                                     />
                                 )}
                                 cellRenderer={({ rowData, cellData }) => {
@@ -289,9 +302,9 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                             cellData={cellData}
                                             prevTasks={['load']}
                                             icons={{
-                                                yet: 'fas fa-circle',
-                                                doing: 'fas fa-edit',
-                                                done: 'fas fa-check-circle',
+                                                yet: FaCircle,
+                                                doing: FaEdit,
+                                                done: FaCheckCircle,
                                             }}
                                             onClick={onReportClicked}
                                         />
@@ -306,7 +319,7 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                 headerRenderer={() => (
                                     <HeaderCell
                                         name="annotate"
-                                        icon="fas fa-edit"
+                                        icon={FaEdit}
                                     />
                                 )}
                                 cellRenderer={({ rowData, cellData }) => {
@@ -316,9 +329,9 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                             cellData={cellData}
                                             prevTasks={['load']}
                                             icons={{
-                                                yet: 'fas fa-circle',
-                                                doing: 'fas fa-edit',
-                                                done: 'fas fa-check-circle',
+                                                yet: FaCircle,
+                                                doing: FaEdit,
+                                                done: FaCheckCircle,
                                             }}
                                             onClick={onAnnotateClicked}
                                         />
@@ -333,7 +346,7 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                 headerRenderer={() => (
                                     <HeaderCell
                                         name="anonymize"
-                                        icon="fas fa-shield-alt"
+                                        icon={FaShieldAlt}
                                     />
                                 )}
                                 cellRenderer={({ rowData, cellData }) => {
@@ -343,10 +356,10 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                             cellData={cellData}
                                             prevTasks={['load']}
                                             icons={{
-                                                yet: 'fas fa-circle',
-                                                doing: 'fas fa-circle-notch fa-spin',
-                                                done: 'fas fa-check-circle',
-                                                error: 'fas fa-exclamation-triangle',
+                                                yet: FaCircle,
+                                                doing: () => <FaCircleNotch className="fa-spin" />,
+                                                done: FaCheckCircle,
+                                                error: FaExclamationTriangle,
                                             }}
                                         />
                                     )
@@ -360,7 +373,7 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                 headerRenderer={() => (
                                     <HeaderCell
                                         name="send"
-                                        icon="fas fa-upload"
+                                        icon={FaUpload}
                                     />
                                 )}
                                 cellRenderer={({ rowData, cellData }) => {
@@ -374,9 +387,9 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                                 'anonymize',
                                             ]}
                                             icons={{
-                                                yet: 'fas fa-circle',
-                                                doing: 'fas fa-circle-notch fa-spin',
-                                                done: 'fas fa-check-circle',
+                                                yet: FaCircle,
+                                                doing: () => <FaCircleNotch className="fa-spin" />,
+                                                done: FaCheckCircle,
                                             }}
                                             onClick={onSendClicked}
                                         />
@@ -391,7 +404,7 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                 headerRenderer={() => (
                                     <HeaderCell
                                         name="doctor"
-                                        icon="fas fa-user"
+                                        icon={FaUser}
                                     />
                                 )}
                                 cellRenderer={({ rowData, cellData }) => {
@@ -421,7 +434,7 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
                                 headerRenderer={() => (
                                     <HeaderCell
                                         name="memo"
-                                        icon="fas fa-file-alt"
+                                        icon={FaFileAlt}
                                     />
                                 )}
                                 cellRenderer={({ rowData, cellData }) => {
@@ -449,16 +462,16 @@ const TaskProgressTable: React.FC<TaskProgressTableProps> = (props) => {
     )
 }
 
-const HeaderCell: React.FC<{ name: string; icon: string }> = ({
+const HeaderCell: React.FC<{ name: string; icon: React.ComponentType }> = ({
     name,
     icon,
 }) => {
     return (
-        <div className="table-header-cell">
-            <a className="table-header-cell-icon">
-                <i className={icon} />
-            </a>
-            <span className="table-header-cell-title">{name}</span>
+        <div className="bg-black/40 w-full h-12 flex text-xl justify-center items-center text-gray-100 font-bold">
+            <span className="mr-2 text-base">
+                {React.createElement(icon)}
+            </span>
+            <span className="uppercase">{name}</span>
         </div>
     )
 }
@@ -469,7 +482,7 @@ const TextCell: React.FC<{
 }> = ({ cellData, convert }) => {
     const displayText = convert ? convert(cellData) : cellData
     return (
-        <div className="table-cell">
+        <div className="w-full h-12 flex justify-center items-center text-xl text-gray-100 font-normal hover:bg-white/5">
             <span>{displayText}</span>
         </div>
     )
@@ -478,13 +491,13 @@ const TextCell: React.FC<{
 type TIconCell = {
     rowData: TaskProgressRecord
     cellData: TStatus
-    icons: Record<string, string>
+    icons: Record<string, React.ComponentType>
     prevTasks: TaskType[]
     onClick?: (caseName: string, e: MouseEvent) => void | Promise<void>
 }
 
 const IconCell: React.FC<TIconCell> = (props) => {
-    const classNameClickable = props.onClick ? 'clickable' : ''
+    const classNameClickable = props.onClick ? 'cursor-pointer' : ''
     const isPrevDone = props.prevTasks.every(
         (task) => props.rowData[task] === 'done'
     )
@@ -495,14 +508,23 @@ const IconCell: React.FC<TIconCell> = (props) => {
             props.onClick(props.rowData.case, e)
         }
     }
+    
+    const getIconColor = (status: TStatus) => {
+        switch (status) {
+            case 'done': return 'text-green-500'
+            case 'error': return 'text-red-500'
+            default: return ''
+        }
+    }
+
     return (
         <div
-            className={`table-cell ${classNameClickable}`}
+            className={`w-full h-12 flex justify-center items-center text-xl text-gray-100 font-normal hover:bg-white/5 ${classNameClickable}`}
             onClick={handleClick}
         >
-            <a className={`icon ${status} `}>
-                {status !== 'disabled' && <i className={props.icons[status]} />}
-            </a>
+            <span className={`${getIconColor(status)}`}>
+                {status !== 'disabled' && React.createElement(props.icons[status])}
+            </span>
         </div>
     )
 }
@@ -532,8 +554,8 @@ const InputCell: React.FC<TInputCellProps> = ({
         }
     }
     return (
-        <div className="table-cell">
-            <div className="input">
+        <div className="w-full h-12 flex justify-center items-center text-xl text-gray-100 font-normal hover:bg-white/5">
+            <div className="w-[95%] h-[95%]">
                 <TextInputWithOptions
                     value={cellData}
                     options={options}

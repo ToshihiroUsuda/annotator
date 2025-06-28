@@ -72,12 +72,14 @@ export const ToolbarItem: React.FC<IToolbarItemProps> = (props) => {
         }
     }
 
-    const className = [`toolbar-btn ${props.name}`]
-    if (props.active) {
-        className.push('active')
+    const className = [`w-12 h-12 bg-transparent border-none text-gray-400 outline-none ${props.name}`]
+    if (props.active && !props.isLocked) {
+        className.push('bg-white/10 border border-white/15')
     }
     if (props.isLocked) {
-        className.push('locked')
+        className.push('opacity-25')
+    } else {
+        className.push('hover:bg-white/10 hover:border hover:border-white/15 active:bg-black/10')
     }
 
     const accelerators = props.accelerators
@@ -103,7 +105,7 @@ export const ToolbarItem: React.FC<IToolbarItemProps> = (props) => {
                 title={getTitle()}
                 onClick={handleClick}
             >
-                <i className={'fas ' + props.icon} />
+                <i className={`fas ${props.icon} text-2xl`} />
             </button>
         </>
     )

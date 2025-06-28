@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
+import { FaFolderOpen, FaEdit, FaInfoCircle } from 'react-icons/fa'
 import {
     AppMode,
     AssetState,
@@ -35,19 +36,19 @@ export const StatusBarMetrics: React.FC<IStatusBarMetricsProps> = (props) => {
     return (
         <ul>
             <li>
-                <i className="fas fa-folder-open"></i>
+                <FaFolderOpen />
                 <span className="metric-source-connection-name">
                     {project.name}
                 </span>
             </li>
-            <li className="sample-metric">
-                <i className="fas fa-edit"></i>
+            <li className="text-green-500">
+                <FaEdit />
                 <span className="metric-sample-asset-count">
                     {sampleAssets.length}
                 </span>
             </li>
-            <li className="step-metric">
-                <i className="fas fa-info-circle"></i>
+            <li className="text-fuchsia-500">
+                <FaInfoCircle />
                 <span className="metric-step-asset-count">
                     {stepAssets.length}
                 </span>

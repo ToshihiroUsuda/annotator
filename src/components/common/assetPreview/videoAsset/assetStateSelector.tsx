@@ -1,7 +1,6 @@
 import React from "react";
 import { FaCircle, FaRegCircle } from "react-icons/fa6";
 import { AssetState } from "../../../../models/applicationState";
-import "./assetStateSelector.scss";
 
 type AssetStateSelectorProps = {
   show: boolean;
@@ -27,8 +26,8 @@ const AssetStateSelector: React.FC<AssetStateSelectorProps> = (props) => {
   };
 
   return (
-    <div className="asset-state-selector">
-      <a className="button sample" onClick={() => onChange(AssetState.Sample)}>
+    <div className="flex flex-row p-0.5 absolute bottom-12 right-5 z-[4]">
+      <a className="mx-0.5 cursor-pointer" onClick={() => onChange(AssetState.Sample)}>
         {props.selectedStates.includes(AssetState.Sample) ? (
           <FaCircle size={20} color={"green"} />
         ) : (
@@ -38,14 +37,14 @@ const AssetStateSelector: React.FC<AssetStateSelectorProps> = (props) => {
           className={`${props.selectedStates.includes(AssetState.Sample) ? "fas" : "far"} fa-circle`}
         ></i> */}
       </a>
-      <a className="button store" onClick={() => onChange(AssetState.Store)}>
+      <a className="mx-0.5 cursor-pointer" onClick={() => onChange(AssetState.Store)}>
         {props.selectedStates.includes(AssetState.Store) ? (
           <FaCircle size={20} color={"red"} />
         ) : (
           <FaRegCircle size={20} color={"red"} />
         )}
       </a>
-      <a className="button freeze" onClick={() => onChange(AssetState.Freeze)}>
+      <a className="mx-0.5 cursor-pointer" onClick={() => onChange(AssetState.Freeze)}>
         {props.selectedStates.includes(AssetState.Freeze) ? (
           <FaCircle size={20} color={"yellow"} />
         ) : (
@@ -53,7 +52,7 @@ const AssetStateSelector: React.FC<AssetStateSelectorProps> = (props) => {
         )}
       </a>
       <a
-        className="button freeze_store"
+        className="mx-0.5 cursor-pointer"
         onClick={() => onChange(AssetState.FreezeStore)}
       >
         {props.selectedStates.includes(AssetState.FreezeStore) ? (
@@ -65,7 +64,7 @@ const AssetStateSelector: React.FC<AssetStateSelectorProps> = (props) => {
       {/* 入力したPolygonの線を表示/非表示するボタン */}
       {props.showPolyInput && (
         <a
-          className="button poly-input"
+          className="mx-0.5 cursor-pointer"
           onClick={() => {
             props.onPolyInputChange?.(!props.isPolyInputEnabled);
           }}

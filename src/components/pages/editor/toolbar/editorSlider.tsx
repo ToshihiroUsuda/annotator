@@ -1,6 +1,6 @@
 import React from "react";
+import { FaUndoAlt } from "react-icons/fa";
 import { ICanvasFilterSetting } from "../canvas/canvas";
-import "./editorSlider.scss";
 import RcSlider from "rc-slider";
 import "rc-slider/assets/index.css";
 
@@ -16,9 +16,9 @@ export interface ISliderProps {
 
 export const Slider: React.FC<ISliderProps> = (props) => {
   return (
-    <div className="slider">
+    <div className="w-1/3 border-r border-white/10 pr-2.5 pl-2.5 box-border">
       <div className="slider-value">{`${props.name}: ${props.value}`}</div>
-      <div className="slider-body">
+      <div className="flex">
         <RcSlider
           {...props}
           onChange={(value) => {
@@ -27,8 +27,8 @@ export const Slider: React.FC<ISliderProps> = (props) => {
             }
           }}
         />
-        <a className="slider-reset-button" onClick={props.onReset}>
-          <i className="fas fa-undo-alt"></i>
+        <a className="text-xs cursor-pointer m-auto pr-2.5 pl-2.5" onClick={props.onReset}>
+          <FaUndoAlt />
         </a>
       </div>
     </div>
@@ -69,7 +69,7 @@ export const EditorSlider: React.FC<IEditorSliderProps> = (props) => {
   };
 
   return (
-    <div className="slider-toolbar" role="toolbar">
+    <div className="flex w-full box-border" role="toolbar">
       <Slider
         value={props.filterSetting.brightness}
         max={100}

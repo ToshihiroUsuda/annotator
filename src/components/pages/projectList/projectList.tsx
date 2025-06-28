@@ -1,6 +1,6 @@
 import React from "react";
+import { FaFolderOpen } from "react-icons/fa";
 import { IProject } from "../../../models/applicationState";
-import "./projectList.scss";
 
 interface IProjectsListItems {
   name: string;
@@ -27,34 +27,38 @@ const ProjectList: React.FC<IProjectsListProps> = (props) => {
     props.onClick?.(project);
   };
   return (
-    <div className="projects-list">
+    <div className="flex flex-1 flex-row relative">
       {sortedItems.map((items) => {
         const title = items.name;
         const projects = items.projects;
         return (
-          <div key={title} className="projects-list-row">
-            <h4 className="projects-list-header bg-darker-2 p-2">
-              <span>{title}</span>
-            </h4>
-            <div className="projects-list-body">
+          <div
+            key={title}
+            className="flex flex-col w-1/4 border-r border-white/10"
+          >
+            <div className="text-base text-gray-100 m-0 uppercase sticky top-0 h-8 flex items-center p-2 bg-black/10">
+              <FaFolderOpen />
+              <div className="ml-2">{title}</div>
+            </div>
+            <div className="flex-grow flex overflow-auto flex-col relative h-[calc(100vh-112px)]">
               {projects.length === 0 && (
                 <div className="p-3 text-center">No items found</div>
               )}
               {projects.length > 0 && (
-                <ul className="projects-list-items">
+                <>
                   {projects.map((project) => (
-                    <li key={project.id} className="recent-project-item">
-                      <a
-                        onClick={() => {
-                          onItemClick(project);
-                        }}
-                      >
-                        <i className="fas fa-folder-open"></i>
-                        <span className="px-2">{project.name}</span>
-                      </a>
-                    </li>
+                    <div
+                      key={project.id}
+                      className="list-none text-base text-gray-300 cursor-pointer w-full py-1 px-4 flex items-center hover:bg-white/10 active:bg-white/10"
+                      onClick={() => {
+                        onItemClick(project);
+                      }}
+                    >
+                      <FaFolderOpen />
+                      <div className="px-2">{project.name}</div>
+                    </div>
                   ))}
-                </ul>
+                </>
               )}
             </div>
           </div>

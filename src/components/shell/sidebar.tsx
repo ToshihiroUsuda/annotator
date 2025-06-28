@@ -1,5 +1,13 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import {
+  FaHome,
+  FaFolderOpen,
+  FaEdit,
+  FaClipboardList,
+  FaQuestionCircle,
+  FaCog,
+} from "react-icons/fa";
 import { strings } from "../../common/strings";
 import {
   AppMode,
@@ -23,60 +31,69 @@ const Sidebar: React.FC<ISidebarProps> = (props: ISidebarProps) => {
     props.appSettings.appMode === AppMode.Hospital;
 
   return (
-    <div className="bg-lighter-2 app-sidebar">
+    <div className="bg-white/10 text-xl flex flex-col py-2">
       {props.appSettings.appMode && (
-        <ul>
-          <li>
+        <>
+          <div className="p-2 flex justify-center">
             <NavLink title={"Home"} to={"/"}>
-              <i className="fas fa-home"></i>
+              <FaHome size={24} className="text-gray-200 hover:text-white" />
             </NavLink>
-          </li>
-          <li>
-            {showReportButton && (
+          </div>
+
+          {showReportButton && (
+            <div className="p-2 flex justify-center">
               <NavLink title={"Report List"} to={`/reportList`}>
-                <i className="fas fa-folder-open fa-fw"></i>
+                {/* <i className="fas fa-folder-open fa-fw"></i> */}
+                <FaFolderOpen
+                  size={24}
+                  className="text-gray-200 hover:text-white"
+                />
               </NavLink>
-            )}
-          </li>
-          <li>
+            </div>
+          )}
+          <div className="p-2 flex justify-center">
             <ConditionalNavLink
               disabled={!projectId}
               title={strings.tags.editor}
               to={`/projects/${projectId}`}
             >
-              <i className="fas fa-edit fa-fw"></i>
+              <FaEdit size={24} className="text-gray-200 hover:text-white" />
             </ConditionalNavLink>
-          </li>
-          <li>
-            {showReportButton && (
+          </div>
+          {showReportButton && (
+            <div className="p-2 flex justify-center">
               <ConditionalNavLink
                 disabled={!reportId}
                 title={"Current Report"}
                 to={`/reports/${reportId}`}
               >
-                <i className="fas fa-clipboard-list fa-fw"></i>
+                <FaClipboardList
+                  size={24}
+                  className="text-gray-200 hover:text-white "
+                />
               </ConditionalNavLink>
-            )}
-          </li>
-          <li>
+            </div>
+          )}
+          <div className="p-2 flex justify-center">
             <ConditionalNavLink
               disabled={!props.appSettings.instructionDirectory}
               title={"Instruction"}
               to={"/instruction"}
             >
-              <i className="fas fa-question-circle fa-fw"></i>
+              <FaQuestionCircle
+                size={24}
+                className="text-gray-200 hover:text-white cursor-pointer"
+              />
             </ConditionalNavLink>
-          </li>
-        </ul>
+          </div>
+        </>
       )}
-      <div className="app-sidebar-fill"></div>
-      <ul>
-        <li>
-          <NavLink title={strings.appSettings.title} to={`/settings`}>
-            <i className="fas fa-cog fa-fw"></i>
-          </NavLink>
-        </li>
-      </ul>
+      <div className="flex-grow"></div>
+      <div className="p-2 flex justify-center">
+        <NavLink title={strings.appSettings.title} to={`/settings`}>
+          <FaCog size={24} className="text-gray-200 hover:text-white" />
+        </NavLink>
+      </div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React from "react";
+import { FaDownload, FaUpload } from "react-icons/fa";
 import { LocalFileSystem } from "../../../providers/storage/localFileSystem";
 import Confirm from "../../common/confirm";
-import "./taskControlToolbar.scss";
 
 const processTypeKeys = ["load", "send"] as const;
 export type ProcessType = (typeof processTypeKeys)[number];
@@ -16,7 +16,7 @@ export interface ITaskControlToolbarProps {
 
 interface IToolbarButtonProp {
   title: string;
-  icon: string;
+  icon: React.ComponentType;
   description: string;
   show: boolean;
   onClick: () => void;
@@ -41,7 +41,7 @@ const TaskControlToolbar: React.FC<ITaskControlToolbarProps> = (props) => {
   const toolberButtonProps: Record<ProcessType, IToolbarButtonProp> = {
     load: {
       title: "Load New Data",
-      icon: "fas fa-download",
+      icon: FaDownload,
       description: "",
       show: shownModal === "load",
       onClick: () => {
@@ -51,7 +51,7 @@ const TaskControlToolbar: React.FC<ITaskControlToolbarProps> = (props) => {
     },
     send: {
       title: "Send Data",
-      icon: "fas fa-upload",
+      icon: FaUpload,
       description: "",
       show: shownModal === "send",
       onClick: () => {
@@ -62,38 +62,53 @@ const TaskControlToolbar: React.FC<ITaskControlToolbarProps> = (props) => {
   };
 
   return (
-    <div className="progress-report-toolbar">
-      <ul>
+    <div className="flex h-32">
+      <ul className="flex flex-row m-auto flex-wrap">
         {processTypeKeys.map((key) => {
-          const prop = toolberButtonProps[key];
-          const className = ["button-item"];
+          const isLocked = props.lockedTypes.includes(key);
           let onClick: () => void;
-          if (props.lockedTypes.includes(key)) {
-            className.push("deactive");
+          if (isLocked) {
             onClick = () => {};
           } else {
-            className.push("active");
             onClick = () => {
               setShownModal(key);
             };
           }
 
           return (
-            <li key={key} onClick={onClick} title={prop.title}>
-              <div className={className.join(" ")}>
-                <div className="button-icon">
-                  <a className={key}>
-                    <i className={prop.icon}></i>
+            <li
+              key={key}
+              onClick={onClick}
+              title={toolberButtonProps[key].title}
+              className="flex list-none mx-2.5"
+            >
+              <div
+                className={`flex flex-col w-32 h-32${
+                  !isLocked ? "hover:cursor-pointer hover:bg-white/10" : ""
+                }`}
+              >
+                <div className="m-auto">
+                  <a
+                    className={`flex flex-row text-center items-center mx-auto ${
+                      isLocked ? "opacity-25" : ""
+                    }`}
+                  >
+                    {React.createElement(toolberButtonProps[key].icon, {
+                      className: "text-center",
+                      style: { fontSize: "80px" },
+                    })}
                   </a>
                 </div>
-                <div className="button-title">{prop.title}</div>
+                <div className={`m-auto ${isLocked ? "opacity-25" : ""}`}>
+                  {toolberButtonProps[key].title}
+                </div>
               </div>
               <Confirm
-                show={prop.show}
-                title={prop.title}
-                message={prop.description}
+                show={toolberButtonProps[key].show}
+                title={toolberButtonProps[key].title}
+                message={toolberButtonProps[key].description}
                 confirmButtonColor="danger"
-                onConfirm={prop.onClick}
+                onConfirm={toolberButtonProps[key].onClick}
               />
             </li>
           );

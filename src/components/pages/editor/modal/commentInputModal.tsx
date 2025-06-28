@@ -3,7 +3,6 @@ import Form, { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import validator from "@rjsf/validator-ajv8";
-import "./commentInputModal.scss";
 
 type TFormData = { comment: string };
 
@@ -46,32 +45,29 @@ export const CommentInputModal: React.FC<ICommentInputModalProps> = (props) => {
     setFormData({ comment: props.comment || "" });
   }, [props.comment]);
 
-  const close = React.useCallback((): void => {
+  const close = (): void => {
     setIsOpen(false);
     props.onCancel?.();
-  }, [props]);
+  };
 
-  const reset = React.useCallback((): void => {
+  const reset = (): void => {
     setFormData({ comment: "" });
     props.onSave("");
     props.onReset?.();
-  }, [props]);
+  };
 
-  const handleFormChange = React.useCallback(
-    (changeEvent: IChangeEvent<TFormData>) => {
-      if (changeEvent.formData) {
-        setFormData(changeEvent.formData);
-      }
-    },
-    []
-  );
+  const handleFormChange = (changeEvent: IChangeEvent<TFormData>) => {
+    if (changeEvent.formData) {
+      setFormData(changeEvent.formData);
+    }
+  };
 
-  const handleSave = React.useCallback(() => {
+  const handleSave = () => {
     if (formData?.comment !== undefined) {
       props.onSave(formData.comment);
       setIsOpen(false);
     }
-  }, [formData, props]);
+  };
 
   const closeBtn = (
     <button className="close" onClick={close}>
@@ -84,19 +80,14 @@ export const CommentInputModal: React.FC<ICommentInputModalProps> = (props) => {
       <ModalHeader toggle={close} close={closeBtn}></ModalHeader>
       <ModalBody>
         <Form<TFormData>
-          idPrefix={"report-form"}
+          idPrefix={"comment-form"}
           schema={formSchema}
           uiSchema={uiSchema}
           formData={formData}
           onChange={handleFormChange}
           validator={validator}
         >
-          <button
-            style={{
-              display: "none",
-            }}
-            type="submit"
-          ></button>
+          <button className="hidden" type="submit"></button>
         </Form>
       </ModalBody>
       <ModalFooter>

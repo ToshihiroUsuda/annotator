@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer'
 import List, { ListRowRenderer } from 'react-virtualized/dist/commonjs/List'
 
@@ -13,59 +13,36 @@ export interface IReportSideBarProps {
     thumbnailSize: ISize
 }
 
-export default class ReportSideBar extends React.Component<IReportSideBarProps> {
-    private listRef: React.RefObject<List | null> = React.createRef()
+const ReportSideBar: React.FC<IReportSideBarProps> = (props) => {
+    const listRef = useRef<List | null>(null)
 
-    public render() {
-        return (
-            <div className="editor-page-sidebar-nav">
-                <AutoSizer>
-                    {({ height, width }) => (
-                        <List
-                            ref={this.listRef}
-                            className="asset-list"
-                            height={height}
-                            width={width}
-                            rowCount={this.props.assets.length}
-                            rowHeight={() => this.getRowHeight(width)}
-                            rowRenderer={this.rowRenderer}
-                            overscanRowCount={2}
-                        />
-                    )}
-                </AutoSizer>
-            </div>
-        )
-    }
+    useEffect(() => {
+        listRef.current?.recomputeRowHeights()
+    }, [props.thumbnailSize])
 
-    public componentDidUpdate(prevProps: IReportSideBarProps) {
-        if (prevProps.thumbnailSize !== this.props.thumbnailSize) {
-            this.listRef.current?.recomputeRowHeights()
-        }
-    }
-
-    private getRowHeight = (width: number) => {
+    const getRowHeight = (width: number) => {
         return width / (4 / 3) + 16
     }
 
-    private onAssetClicked = (asset: IAsset): void => {
-        this.props.onAssetSelected?.(asset)
+    const onAssetClicked = (asset: IAsset): void => {
+        props.onAssetSelected?.(asset)
     }
 
-    private rowRenderer: ListRowRenderer = ({ key, index, style }) => {
-        const asset = this.props.assets[index]
+    const rowRenderer: ListRowRenderer = ({ key, index, style }) => {
+        const asset = props.assets[index]
 
         return (
             <div
                 key={key}
                 style={style}
                 className="asset-item"
-                onClick={() => this.onAssetClicked(asset)}
+                onClick={() => onAssetClicked(asset)}
             >
                 <div className="asset-item-image">
                     <AssetPreview
                         asset={asset}
-                        projectName={this.props.reportName}
-                        appSettings={this.props.appSettings}
+                        projectName={props.reportName}
+                        appSettings={props.appSettings}
                     />
                 </div>
                 <div className="asset-item-metadata">
@@ -76,4 +53,25 @@ export default class ReportSideBar extends React.Component<IReportSideBarProps> 
             </div>
         )
     }
+
+    return (
+        <div className="editor-page-sidebar-nav">
+            <AutoSizer>
+                {({ height, width }) => (
+                    <List
+                        ref={listRef}
+                        className="asset-list"
+                        height={height}
+                        width={width}
+                        rowCount={props.assets.length}
+                        rowHeight={() => getRowHeight(width)}
+                        rowRenderer={rowRenderer}
+                        overscanRowCount={2}
+                    />
+                )}
+            </AutoSizer>
+        </div>
+    )
 }
+
+export default ReportSideBar

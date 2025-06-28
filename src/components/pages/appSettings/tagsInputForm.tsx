@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { TagsInput, ITag as IVoTTReactTag } from "vott-react";
 // import 'vott-react/dist/css/tagsInput.css'
-import "./tagsInputForm.scss";
+import "./reactTags.css";
 import { constants } from "../../../common/constants";
 import { strings } from "../../../common/strings";
 import { AppError, ErrorCode, ITag } from "../../../models/applicationState";

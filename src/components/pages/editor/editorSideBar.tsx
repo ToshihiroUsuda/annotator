@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { FaEdit, FaTag, FaInfoCircle, FaCommentDots } from "react-icons/fa";
 import { AutoSizer, List } from "react-virtualized";
 import { strings } from "../../../common/strings";
 import {
@@ -90,7 +91,7 @@ export const EditorSideBar: React.FC<IEditorSideBarProps> = (props) => {
         className={getAssetCssClassNames(asset, selectedAsset)}
         onClick={() => onAssetClicked(asset)}
       >
-        <div className="asset-item-image">
+        <div className="flex-grow overflow-hidden flex bg-black/30 text-center relative m-auto w-full">
           {renderBadges(asset)}
           <AssetPreview
             asset={asset}
@@ -99,11 +100,14 @@ export const EditorSideBar: React.FC<IEditorSideBarProps> = (props) => {
             showAssetStateSelector={false}
           />
         </div>
-        <div className="asset-item-metadata">
-          <span className="asset-filename" title={asset.name}>
+        <div className="flex flex-row text-[70%] whitespace-nowrap">
+          <span
+            className="overflow-hidden text-ellipsis whitespace-nowrap flex-grow"
+            title={asset.name}
+          >
             {asset.name}
           </span>
-          {asset.size && (
+          {asset.size.width !== 0 && (
             <span>
               {asset.size.width} x {asset.size.height}
             </span>
@@ -119,24 +123,27 @@ export const EditorSideBar: React.FC<IEditorSideBarProps> = (props) => {
         return (
           <span
             title={strings.editorPage.tagged}
-            className="badge badge-sample"
+            className="badge text-white absolute z-20 right-2 top-2 border border-white/15 bg-green-400/90 text-shadow-lg"
           >
-            <i className="fas fa-edit"></i>
+            <FaEdit />
           </span>
         );
       case AssetState.Store:
         return (
-          <span title={strings.editorPage.tagged} className="badge badge-store">
-            <i className="fas fa-tag"></i>
+          <span
+            title={strings.editorPage.tagged}
+            className="badge text-white absolute z-20 right-2 top-2 border border-white/15 bg-red-400/90 text-shadow-lg"
+          >
+            <FaTag />
           </span>
         );
       case AssetState.Freeze:
         return (
           <span
             title={strings.editorPage.tagged}
-            className="badge badge-freeze"
+            className="badge text-white absolute z-20 right-2 top-2 border border-white/15 bg-orange-400/90 text-shadow-lg"
           >
-            <i className="fas fa-tag"></i>
+            <FaTag />
           </span>
         );
       default:
@@ -144,18 +151,18 @@ export const EditorSideBar: React.FC<IEditorSideBarProps> = (props) => {
           return (
             <span
               title={strings.editorPage.tagged}
-              className="badge badge-step"
+              className="badge text-white absolute z-20 right-2 top-2 border border-white/15 bg-purple-400/90 text-shadow-lg"
             >
-              <i className="fas fa-info-circle"></i>
+              <FaInfoCircle />
             </span>
           );
         } else if (asset.comment) {
           return (
             <span
               title={strings.editorPage.tagged}
-              className="badge badge-comment"
+              className="badge text-white absolute z-20 right-2 top-2 border border-white/15 bg-orange-400/90 text-shadow-lg"
             >
-              <i className="fas fa-comment-dots"></i>
+              <FaCommentDots />
             </span>
           );
         } else {
@@ -168,28 +175,29 @@ export const EditorSideBar: React.FC<IEditorSideBarProps> = (props) => {
     asset: IAsset,
     selectedAsset?: IAsset
   ): string => {
-    const cssClasses = ["asset-item"];
+    let cssClasses =
+      "flex flex-col p-2 hover:relative hover:bg-white/15 cursor-pointer";
     if (selectedAsset) {
       if (selectedAsset.name === asset.name) {
-        cssClasses.push("selected");
+        cssClasses += " text-white bg-yellow-400/50 font-semibold";
       } else if (selectedAsset.parent) {
         if (selectedAsset.parent.name === asset.name) {
-          cssClasses.push("selected");
+          cssClasses += " text-white bg-yellow-400/50 font-semibold";
         }
       }
     }
 
-    return cssClasses.join(" ");
+    return cssClasses;
   };
 
   return (
-    <div className="editor-page-sidebar-nav">
+    <div className="flex-grow">
       <AutoSizer>
         {({ height, width }) => (
           <List
             ref={listRef}
             key={props.sideBarWidth}
-            className="asset-list"
+            className="select-none focus:outline-none"
             height={height}
             width={width}
             rowCount={props.assets.length}

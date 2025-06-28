@@ -6,7 +6,6 @@ import { IProjectActions } from '../../../../atom/actions/project'
 import { ToolbarItemName, ToolbarItemUse } from '../../../../registerToolbar'
 import { ToggleSwitch } from './toggleSwitch'
 import { IToolbarItemProps, ToolbarItemType } from './toolbarItem'
-import './editorToolbar.scss'
 
 export interface IEditorToolbarProps {
     project: IProject
@@ -71,39 +70,41 @@ export const EditorToolbar: React.FC<IEditorToolbarProps> = (props) => {
         .value()
 
     return (
-        <div className="btn-toolbar" role="toolbar">
-            {groups.map((items, idx) => (
-                <div key={idx} className="btn-group mr-2" role="group">
-                    {items.map((registration) => {
-                        const isLocked =
-                            !!registration.config.toBeLocked && props.isLocked
-                        const toolbarItemProps: IToolbarItemProps = {
-                            ...registration.config,
-                            actions: props.actions,
-                            project: props.project,
-                            active: isLocked
-                                ? false
-                                : isComponentActive(selectedItem, registration),
-                            isLocked: isLocked,
-                            onClick: onToolbarItemSelected,
-                        }
-                        const ToolbarItem = registration.component
+        <div className="p-1.5" role="toolbar">
+            <div className="flex">
+                {groups.map((items, idx) => (
+                    <div key={idx} className="flex border-r border-white/10 pr-2.5 mr-2" role="group">
+                        {items.map((registration) => {
+                            const isLocked =
+                                !!registration.config.toBeLocked && props.isLocked
+                            const toolbarItemProps: IToolbarItemProps = {
+                                ...registration.config,
+                                actions: props.actions,
+                                project: props.project,
+                                active: isLocked
+                                    ? false
+                                    : isComponentActive(selectedItem, registration),
+                                isLocked: isLocked,
+                                onClick: onToolbarItemSelected,
+                            }
+                            const ToolbarItem = registration.component
 
-                        return (
-                            <ToolbarItem
-                                key={toolbarItemProps.name}
-                                {...toolbarItemProps}
-                            />
-                        )
-                    })}
+                            return (
+                                <ToolbarItem
+                                    key={toolbarItemProps.name}
+                                    {...toolbarItemProps}
+                                />
+                            )
+                        })}
+                    </div>
+                ))}
+                <div className="relative inline-flex items-center ml-auto mr-1.5">
+                    <ToggleSwitch
+                        labels={['ON', 'OFF']}
+                        isLocked={props.isLocked}
+                        onClick={props.onToggleClicked}
+                    />
                 </div>
-            ))}
-            <div className="toggle-switch-area">
-                <ToggleSwitch
-                    labels={['ON', 'OFF']}
-                    isLocked={props.isLocked}
-                    onClick={props.onToggleClicked}
-                />
             </div>
         </div>
     )

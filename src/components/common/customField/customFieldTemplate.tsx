@@ -13,11 +13,9 @@ const CustomFieldTemplate: React.FC<FieldTemplateProps> = (props) => {
         children,
     } = props
 
-    const classNames = []
+    const classNames = ['mb-4']
     if (props.schema.type === 'object') {
-        classNames.push('object-wrapper')
-    } else {
-        classNames.push('form-group')
+        classNames.push('text-2xl', 'font-semibold', 'pl-4')
     }
 
     if (rawErrors && rawErrors.length > 0) {
@@ -49,7 +47,7 @@ const CustomFieldTemplate: React.FC<FieldTemplateProps> = (props) => {
             )}
             {children}
             {schema.type !== 'array' && description && (
-                <small className="text-muted">{description}</small>
+                <small className="text-muted mb-1">{description}</small>
             )}
             {rawErrors && rawErrors.length > 0 && (
                 <div className="invalid-feedback">

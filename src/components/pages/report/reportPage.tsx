@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import SplitPane from "react-split-pane-v2";
+import { FaClipboard, FaRedo, FaPaste } from "react-icons/fa";
+// import SplitPane from "react-split-pane-v2";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useProjectActions, IReportActions } from "../../../atom/actions";
 import {
   IAppSettings,
@@ -13,7 +15,6 @@ import Confirm from "../../common/confirm";
 import PropsWithNavigate from "../navigate";
 import OverwriteModal from "./overwriteModal";
 import { ReportForm } from "./reportForm";
-import "./reportPage.scss";
 import ReportSideBar from "./reportSideBar";
 import _ from "lodash";
 export interface IReportPageProps extends PropsWithNavigate {
@@ -106,42 +107,40 @@ const ReportPage: React.FC<IReportPageProps> = (props) => {
   };
   const reportName: string = props.report.name || "New Report";
   return (
-    <div className="report-page m-3">
-      <div className="report-title m-3">
+    <div className="flex-grow flex flex-col overflow-hidden relative m-3">
+      <div className="flex flex-row m-auto m-3">
         <h3 className="mb-3">
-          <i className="fas fa-clipboard fa-1x"></i>
+          <FaClipboard />
           <span className="px-2">{reportName}</span>
         </h3>
-        <div className="toolber">
+        <div className="ml-auto mr-2.5">
           <a
-            className="toolber-item"
+            className="ml-5 cursor-pointer text-3xl"
             onClick={() => {
               setShownModal("reset");
             }}
           >
-            <i className="fas fa-redo"></i>
+            <FaRedo />
           </a>
           <a
-            className="toolber-item"
+            className="ml-5 cursor-pointer text-3xl"
             onClick={() => {
               setShownModal("overwrite");
             }}
           >
-            <i className="fas fa-paste"></i>
+            <FaPaste />
           </a>
         </div>
       </div>
-      <div className="report-main">
-        <SplitPane
-          split="vertical"
-          defaultSize={thumbnailSize.width}
-          minSize={100}
-          maxSize={500}
-          paneStyle={{ display: "flex" }}
-          onChange={onSideBarResize}
-          onDragFinished={() => {}}
-        >
-          <div className="report-page-sidebar">
+      <div>
+        <PanelGroup direction="horizontal">
+          <Panel
+            defaultSize={thumbnailSize.width / 10} // react-resizable-panelsは%単位
+            minSize={10}
+            maxSize={50}
+            onResize={onSideBarResize}
+            className="flex flex-col"
+          >
             {referenceAssets.length > 0 && (
               <ReportSideBar
                 assets={referenceAssets}
@@ -151,15 +150,16 @@ const ReportPage: React.FC<IReportPageProps> = (props) => {
                 thumbnailSize={thumbnailSize}
               />
             )}
-          </div>
-          <div className="report-page-content">
+          </Panel>
+          <PanelResizeHandle className="w-1 bg-gray-200" />
+          <Panel className="flex-grow flex-row">
             <ReportForm
               report={props.report}
               schemaDir={props.appSettings.reportSchema}
               onFormChange={onFormChange}
             />
-          </div>
-        </SplitPane>
+          </Panel>
+        </PanelGroup>
       </div>
 
       <OverwriteModal

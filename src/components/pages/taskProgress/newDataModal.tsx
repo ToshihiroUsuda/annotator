@@ -1,8 +1,8 @@
 import React from 'react'
 import { Line } from 'rc-progress'
 import { Modal, ModalBody, ModalHeader } from 'reactstrap'
+import { FaFileVideo, FaVideo, FaCopy, FaTasks } from 'react-icons/fa'
 import { normalizeSlashes } from '../../../common/utils'
-import './newDataModal.scss'
 
 export type TNewDataRecord = {
     fileName: string
@@ -23,28 +23,28 @@ const newDataRecordKeys: TNewDataRecordKeys[] = [
 const header: {
     [key in TNewDataRecordKeys]: {
         title: string
-        icon: string
+        icon: React.ComponentType
         colSpan: number
     }
 } = {
     fileName: {
         title: 'file name',
-        icon: 'fas fa-file-video',
+        icon: FaFileVideo,
         colSpan: 1,
     },
     duration: {
         title: 'duration',
-        icon: 'fas fa-video',
+        icon: FaVideo,
         colSpan: 1,
     },
     status: {
         title: 'status',
-        icon: 'fas fa-copy',
+        icon: FaCopy,
         colSpan: 1,
     },
     progress: {
         title: 'progress',
-        icon: 'fas fa-tasks',
+        icon: FaTasks,
         colSpan: 3,
     },
 }
@@ -76,66 +76,73 @@ const NewDataModal: React.FC<TNewDataModalProps> = (props) => {
         })
 
         return (
-            <table className="new-data-table bg-darker-2">
-                <thead>
-                    <tr className="table-header">
-                        {newDataRecordKeys.map((headerName) => (
-                            <th
-                                key={headerName}
-                                colSpan={header[headerName].colSpan}
-                            >
-                                <a className="table-header-icon">
-                                    <i className={header[headerName].icon} />
-                                </a>
-                                <span className="table-header-title">
-                                    {header[headerName].title}
-                                </span>
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {newDataRecords.map((record, index) => {
-                        const fileName = normalizeSlashes(record.fileName)
-                            .split('/')
-                            .pop()
-                        const duration = record.duration
-                        const status = record.status
-                        const progress = 100 * record.progress
-                        return (
-                            <tr key={index}>
-                                <td className="td-props">
-                                    <span>{fileName}</span>
-                                </td>
-                                <td className="td-props">
-                                    <span>{duration}</span>
-                                </td>
-                                <td className="td-props">
-                                    <span>{status}</span>
-                                </td>
-                                <td
-                                    className="td-progress"
-                                    colSpan={header.progress.colSpan}
+            <div className="w-full box-border relative">
+                <table className="w-full table-fixed">
+                    <thead>
+                        <tr className="h-12 text-gray-100 font-normal text-center text-xl">
+                            {newDataRecordKeys.map((headerName) => (
+                                <th
+                                    key={headerName}
+                                    colSpan={header[headerName].colSpan}
                                 >
-                                    {progress > 0 && (
-                                        <Line
-                                            percent={progress}
-                                            strokeWidth={2.5}
-                                            strokeColor={'green'}
-                                            trailWidth={2.5}
-                                        />
-                                    )}
-                                </td>
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
+                                    <span className="mr-2 text-base">
+                                        {React.createElement(header[headerName].icon)}
+                                    </span>
+                                    <span className="uppercase">
+                                        {header[headerName].title}
+                                    </span>
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white/5">
+                        {newDataRecords.map((record, index) => {
+                            const fileName = normalizeSlashes(record.fileName)
+                                .split('/')
+                                .pop()
+                            const duration = record.duration
+                            const status = record.status
+                            const progress = 100 * record.progress
+                            return (
+                                <tr key={index} className="h-12 text-gray-100 font-normal text-center text-xl">
+                                    <td className="overflow-hidden text-ellipsis whitespace-nowrap">
+                                        <span>{fileName}</span>
+                                    </td>
+                                    <td className="overflow-hidden text-ellipsis whitespace-nowrap">
+                                        <span>{duration}</span>
+                                    </td>
+                                    <td className="overflow-hidden text-ellipsis whitespace-nowrap">
+                                        <span>{status}</span>
+                                    </td>
+                                    <td
+                                        className="mx-2"
+                                        colSpan={header.progress.colSpan}
+                                    >
+                                        {progress > 0 && (
+                                            <Line
+                                                percent={progress}
+                                                strokeWidth={2.5}
+                                                strokeColor={'green'}
+                                                trailWidth={2.5}
+                                            />
+                                        )}
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
+            </div>
         )
     }
 
     return (
-        <Modal size="xl" centered isOpen={props.isOpen}>
+        <Modal 
+            size="xl" 
+            centered 
+            isOpen={props.isOpen}
+            className="max-w-[80vw] min-h-[100px]"
+        >
             <ModalHeader toggle={() => handleClose()}>
                 Loading New Data
             </ModalHeader>

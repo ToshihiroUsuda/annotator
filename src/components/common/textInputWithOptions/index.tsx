@@ -1,5 +1,4 @@
 import React, { ChangeEvent, useEffect, useState } from 'react'
-import './textInputWithOptions.scss'
 
 type TextInputWithOptionsProps = {
     value: string
@@ -31,9 +30,9 @@ export const TextInputWithOptions: React.FC<TextInputWithOptionsProps> = ({
     }
 
     return (
-        <div className="text-input-container">
+        <div className="h-full">
             <input
-                className="text-input"
+                className="w-full h-full"
                 list={options ? 'options' : ''}
                 id="custom-input"
                 value={inputValue}

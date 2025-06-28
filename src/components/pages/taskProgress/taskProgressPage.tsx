@@ -16,7 +16,6 @@ import { LocalFileSystem } from "../../../providers/storage/localFileSystem";
 import NameInputModal from "./nameInputModal";
 import NewDataModal from "./newDataModal";
 import TaskControlToolbar from "./taskControlToolbar";
-import "./taskProgressPage.scss";
 import TaskProgressTable from "./taskProgressTable";
 import ViimProcess from "./viimProcess";
 
@@ -325,17 +324,19 @@ const TaskProgressPage: React.FC<ITaskProgressProps> = (props) => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="page-main m-3">
-      <div className="toolbar">
-        <TaskControlToolbar
-          lockedTypes={lockedProcess}
-          viimScriptDirectory={props.appSettings.viimScript}
-          viimSettingsFile={props.appSettings.viimSetting}
-          executeLoad={executeLoad}
-          executeSend={executeSend}
-        />
+    <div className="flex flex-col flex-grow m-3">
+      <div className="w-full box-border">
+        <div className="mx-auto">
+          <TaskControlToolbar
+            lockedTypes={lockedProcess}
+            viimScriptDirectory={props.appSettings.viimScript}
+            viimSettingsFile={props.appSettings.viimSetting}
+            executeLoad={executeLoad}
+            executeSend={executeSend}
+          />
+        </div>
       </div>
-      <div className="task-progress-table">
+      <div className="mt-6 w-full flex-grow overflow-y-scroll">
         <TaskProgressTable
           caseData={caseData}
           recentProjects={props.recentProjects}

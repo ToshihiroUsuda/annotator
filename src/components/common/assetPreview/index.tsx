@@ -2,11 +2,11 @@ import React, {
   useState,
   useRef,
   useEffect,
-  useCallback,
   useImperativeHandle,
   forwardRef,
   SyntheticEvent,
 } from "react";
+import { FaCircleNotch, FaExclamationCircle } from "react-icons/fa";
 import { strings } from "../../../common/strings";
 import {
   AssetType,
@@ -112,37 +112,28 @@ export const AssetPreview = forwardRef<IAssetPreviewHandle, IAssetPreviewProps>(
       return (a as IAssetWithTimestamp).timestamp !== undefined;
     };
 
-    const handleAssetLoad = useCallback(
-      (contentSource: ContentSource) => {
-        setLoaded(true);
-        onLoaded?.(contentSource);
-      },
-      [onLoaded]
-    );
+    const handleAssetLoad = (contentSource: ContentSource) => {
+      setLoaded(true);
+      onLoaded?.(contentSource);
+    };
 
-    const handleError = useCallback(
-      (e: SyntheticEvent) => {
-        setHasError(true);
-        setLoaded(true);
-        onError?.(e);
-      },
-      [onError]
-    );
+    const handleError = (e: SyntheticEvent) => {
+      setHasError(true);
+      setLoaded(true);
+      onError?.(e);
+    };
 
-    const handleChildAssetSelected = useCallback(
-      (selectedAsset: IAsset) => {
-        if (onBeforeAssetChanged && !onBeforeAssetChanged()) {
-          return;
-        }
-        if (onChildAssetSelected) {
-          onChildAssetSelected(selectedAsset);
-        }
-        if (onAssetChanged) {
-          onAssetChanged(selectedAsset);
-        }
-      },
-      [onBeforeAssetChanged, onChildAssetSelected, onAssetChanged]
-    );
+    const handleChildAssetSelected = (selectedAsset: IAsset) => {
+      if (onBeforeAssetChanged && !onBeforeAssetChanged()) {
+        return;
+      }
+      if (onChildAssetSelected) {
+        onChildAssetSelected(selectedAsset);
+      }
+      if (onAssetChanged) {
+        onAssetChanged(selectedAsset);
+      }
+    };
 
     // refで外部公開するメソッド
     useImperativeHandle(ref, () => ({
@@ -198,33 +189,35 @@ export const AssetPreview = forwardRef<IAssetPreviewHandle, IAssetPreviewProps>(
           );
         default:
           return (
-            <div className="asset-error">{strings.editorPage.assetError}</div>
+            <div className="text-sm font-medium mx-auto text-[85%]">
+              {strings.editorPage.assetError}
+            </div>
           );
       }
     };
 
     const size = asset.size;
-    const classNames = ["asset-preview"];
+    const classNames = ["flex flex-grow"];
     if (size) {
       if (size.width > size.height) {
         classNames.push("landscape");
       } else {
-        classNames.push("portrait");
+        classNames.push("portrait", "mx-auto");
       }
     }
     return (
       <div className={classNames.join(" ")}>
-        <div className="asset-preview-container">
+        <div className="flex relative flex-col w-full text-center">
           {!loaded && (
-            <div className="asset-loading">
-              <div className="asset-loading-spinner">
-                <i className="fas fa-circle-notch fa-spin" />
+            <div className="absolute top-0 bottom-0 left-0 right-0 bg-black/80">
+              <div className="absolute top-[45%] left-1/2">
+                <FaCircleNotch className="fa-spin" />
               </div>
             </div>
           )}
           {hasError && (
-            <div className="asset-error text-danger">
-              <i className="fas fa-2x fa-exclamation-circle" />
+            <div className="text-sm font-medium mx-auto text-danger text-[85%]">
+              <FaExclamationCircle className="text-2xl" />
               <p className="m-2">{strings.editorPage.assetError}</p>
             </div>
           )}

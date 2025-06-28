@@ -6,7 +6,6 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import ArrayFieldTemplate from "../../../common/arrayField/arrayFieldTemplate";
 import FieldTemplate from "../../../common/customField/customFieldTemplate";
 import { ObjectFieldTemplate } from "../../../common/objectField/objectFieldTemplate";
-import "./FrameLabelInputModal.scss";
 import { LocalFileSystem } from "../../../../providers/storage/localFileSystem";
 /**
  * Properties for Tag Editor Modal
@@ -62,31 +61,31 @@ export const FrameLabelInputModal: React.FC<IFrameLabelInputModalProps> = (
     })();
   }, []);
 
-  const close = React.useCallback((): void => {
+  const close = (): void => {
     setIsOpen(false);
     props.onCancel?.();
-  }, [props]);
+  };
 
-  const reset = React.useCallback((): void => {
+  const reset = (): void => {
     setFormData({});
     props.onSave("");
     if (props.onReset) {
       props.onReset();
     }
-  }, [props]);
+  };
 
-  const handleFormChange = React.useCallback((args: IChangeEvent): void => {
+  const handleFormChange = (args: IChangeEvent): void => {
     setFormData(args.formData);
-  }, []);
+  };
 
-  const handleSave = React.useCallback(async (): Promise<void> => {
+  const handleSave = async (): Promise<void> => {
     let step = JSON.stringify(formData?.step);
     if (step === "{}") {
       step = "";
     }
     props.onSave(step);
     setIsOpen(false);
-  }, [formData, props]);
+  };
 
   const closeBtn = (
     <button className="close" onClick={close}>
@@ -111,12 +110,7 @@ export const FrameLabelInputModal: React.FC<IFrameLabelInputModalProps> = (
           onChange={handleFormChange}
           validator={validator}
         >
-          <button
-            style={{
-              display: "none",
-            }}
-            type="submit"
-          ></button>
+          <button className="hidden" type="submit"></button>
         </Form>
       </ModalBody>
       <ModalFooter>

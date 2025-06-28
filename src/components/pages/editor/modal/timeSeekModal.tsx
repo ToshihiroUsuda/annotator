@@ -3,7 +3,6 @@ import Form, { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import validator from "@rjsf/validator-ajv8";
-import "./timeSeekModal.scss";
 
 type TFormData = {
   minutes: number;
@@ -61,27 +60,24 @@ export const TimeSeekModal: React.FC<ITimeSeekModalProps> = (props) => {
     }
   }, [props.timestamp]);
 
-  const close = React.useCallback((): void => {
+  const close = (): void => {
     setIsOpen(false);
     props.onCancel?.();
-  }, [props]);
+  };
 
-  const handleFormChange = React.useCallback(
-    (changeEvent: IChangeEvent<TFormData>) => {
-      if (changeEvent.formData) {
-        setFormData(changeEvent.formData);
-      }
-    },
-    []
-  );
+  const handleFormChange = (changeEvent: IChangeEvent<TFormData>) => {
+    if (changeEvent.formData) {
+      setFormData(changeEvent.formData);
+    }
+  };
 
-  const handleSave = React.useCallback(() => {
+  const handleSave = () => {
     if (formData) {
       const timestamp = formData.minutes * 60 + formData.seconds;
       props.onSave(timestamp);
       setIsOpen(false);
     }
-  }, [formData, props]);
+  };
 
   const closeBtn = (
     <button className="close" onClick={close}>
@@ -102,12 +98,7 @@ export const TimeSeekModal: React.FC<ITimeSeekModalProps> = (props) => {
           onChange={handleFormChange}
           validator={validator}
         >
-          <button
-            style={{
-              display: "none",
-            }}
-            type="submit"
-          ></button>
+          <button className="hidden" type="submit"></button>
         </Form>
       </ModalBody>
       <ModalFooter>

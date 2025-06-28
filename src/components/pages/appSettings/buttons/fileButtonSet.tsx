@@ -1,5 +1,4 @@
 import React from 'react'
-import './button.scss'
 import { FileExportButton } from './fileExportButton'
 import { FileImportButton } from './fileImportButton'
 
@@ -10,7 +9,7 @@ interface IFileButtonSetProps {
 
 export const FileButtonSet: React.FC<IFileButtonSetProps> = (props) => {
     return (
-        <div className="button-set">
+        <div className="flex flex-row [&>button]:mr-1">
             <FileExportButton onExport={props.onExport} />
             <FileImportButton onImport={props.onImport} />
         </div>

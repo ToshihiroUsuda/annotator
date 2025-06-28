@@ -1,6 +1,10 @@
-import React, { SyntheticEvent, ReactElement } from "react";
+import React, {
+  SyntheticEvent,
+  ReactElement,
+  useState,
+  useEffect,
+} from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import "./messageBox.scss";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type MessageFormatHandler = (...params: any[]) => string;
@@ -17,127 +21,81 @@ export interface IMessageBoxProps extends React.PropsWithChildren {
   hideFooter?: boolean;
 }
 
-export interface IMessageBoxState {
-  isOpen: boolean;
-  isRendered: boolean;
-  isButtonSelected: boolean;
-}
-
 /**
  * Generic modal that displays a message
  */
-export default class MessageBox extends React.Component<
-  IMessageBoxProps,
-  IMessageBoxState
-> {
-  constructor(props: IMessageBoxProps) {
-    super(props);
+const MessageBox = (props: IMessageBoxProps) => {
+  const [isOpen, setIsOpen] = useState(!!props.show);
+  const [isRendered, setIsRendered] = useState(!!props.show);
+  const [isButtonSelected, setIsButtonSelected] = useState(false);
 
-    this.state = {
-      isOpen: !!props.show,
-      isRendered: !!props.show,
-      isButtonSelected: false,
-    };
-
-    this.toggle = this.toggle.bind(this);
-    this.open = this.open.bind(this);
-    this.close = this.close.bind(this);
-    this.onFooterClick = this.onFooterClick.bind(this);
-    this.onClosed = this.onClosed.bind(this);
-  }
-
-  public render() {
-    if (!this.state.isRendered) {
-      return null;
+  useEffect(() => {
+    if (props.show !== isOpen) {
+      setIsOpen(!!props.show);
+      setIsRendered(!!props.show);
     }
+  }, [props.show]);
 
-    return (
-      <Modal
-        className="messagebox-modal"
-        isOpen={this.state.isOpen}
-        onClosed={this.onClosed}
-      >
-        <ModalHeader toggle={this.toggle}>{this.props.title}</ModalHeader>
-        <ModalBody>{this.getMessage(this.props.message)}</ModalBody>
-        {!this.props.hideFooter && (
-          <ModalFooter onClick={this.onFooterClick}>
-            {this.props.children}
-          </ModalFooter>
-        )}
-      </Modal>
-    );
-  }
-
-  public open(): void {
-    this.setState({
-      isOpen: true,
-      isRendered: true,
-      isButtonSelected: false,
-    });
-  }
-
-  public close(): void {
-    this.setState(
-      {
-        isOpen: false,
-      },
-      () => {
-        if (!this.state.isButtonSelected) {
-          this.props.onCancel?.();
-        }
-      }
-    );
-  }
-
-  public componentDidUpdate(prevProps: Readonly<IMessageBoxProps>): void {
-    if (prevProps.show !== this.props.show) {
-      this.setState({
-        isOpen: !!this.props.show,
-        isRendered: !!this.props.show,
-      });
-    }
-  }
-
-  private getMessage = (
+  const getMessage = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     message: string | MessageFormatHandler | ReactElement<any>
   ) => {
     if (typeof message === "string" || React.isValidElement(message)) {
       return message;
-    } else if (
-      typeof message === "function" &&
-      this.props.params !== undefined
-    ) {
-      return message.apply(this, this.props.params);
+    } else if (typeof message === "function" && props.params !== undefined) {
+      return message.apply(null, props.params);
     }
   };
 
-  private onFooterClick(evt: SyntheticEvent) {
+  const onFooterClick = (evt: SyntheticEvent) => {
     const htmlElement = evt.target as HTMLButtonElement;
     if (htmlElement.tagName === "BUTTON") {
-      this.setState(
-        {
-          isButtonSelected: true,
-        },
-        () => {
-          this.close();
-          this.props.onButtonSelect?.(htmlElement);
-        }
-      );
+      setIsButtonSelected(true);
+      close();
+      props.onButtonSelect?.(htmlElement);
     }
-  }
+  };
 
-  private toggle() {
-    if (this.state.isOpen) {
-      this.close();
+  const toggle = () => {
+    if (isOpen) {
+      close();
     } else {
-      this.open();
+      open();
     }
+  };
+
+  const open = (): void => {
+    setIsOpen(true);
+    setIsRendered(true);
+    setIsButtonSelected(false);
+  };
+
+  const close = (): void => {
+    setIsOpen(false);
+    if (!isButtonSelected) {
+      props.onCancel?.();
+    }
+  };
+
+  const onClosed = () => {
+    setIsRendered(false);
+  };
+
+  if (!isRendered) {
+    return null;
   }
 
-  private onClosed() {
-    this.setState({
-      isRendered: false,
-    });
-  }
-}
+  return (
+    <Modal isOpen={isOpen} onClosed={onClosed}>
+      <ModalHeader toggle={toggle} className="text-white">
+        {props.title}
+      </ModalHeader>
+      <ModalBody className="text-white">{getMessage(props.message)}</ModalBody>
+      {!props.hideFooter && (
+        <ModalFooter onClick={onFooterClick}>{props.children}</ModalFooter>
+      )}
+    </Modal>
+  );
+};
+
+export default MessageBox;
